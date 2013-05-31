@@ -1,0 +1,73 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="0dp"
+    tools:context=".MUCActivity" >
+
+    <ListView
+        android:id="@+id/muc_listView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/muc_editText"
+        android:paddingBottom="100dp"
+        android:scrollbarAlwaysDrawVerticalTrack="true"
+        android:scrollbarStyle="insideInset"
+        android:stackFromBottom="true"
+        android:transcriptMode="alwaysScroll" />
+
+    <LinearLayout
+        android:id="@+id/muc_action_view"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:background="@drawable/verlauf_blue"
+        android:orientation="horizontal"
+        android:layout_above="@+id/muc_input" >
+        <Button 
+            android:id="@+id/muc_btn_pos"
+            android:layout_width="50dp"
+            android:layout_height="match_parent"
+            android:background="@drawable/border"
+            android:text="GPS"
+            android:textColor="#ffffff"
+            />
+        <Button 
+            android:id="@+id/muc_btn_cd"
+            android:layout_width="50dp"
+            android:layout_height="match_parent"
+            android:background="@drawable/border"
+            android:text="ClientData"
+            android:layout_marginLeft="5dp"
+            android:textColor="#ffffff"
+            />
+    </LinearLayout>
+    
+    <LinearLayout
+        android:id="@+id/muc_input"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_alignParentBottom="true"
+        android:background="#333333"
+        android:padding="0dp" >
+
+        <EditText
+            android:id="@+id/muc_editText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="5dp"
+            android:layout_weight="1.0"
+            android:ems="10"
+            android:hint="Text"
+            android:textColor="#ffffff"
+            android:textColorHint="#cccccc" />
+
+        <Button
+            android:id="@+id/muc_btn_send"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="#555555"
+            android:text="Senden"
+            android:textColor="#ffffff" />
+    </LinearLayout>
+
+</RelativeLayout>

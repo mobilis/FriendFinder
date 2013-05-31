@@ -1,0 +1,11 @@
+TODO FriendFinder
+
+- Discover nach CreateService
+- Coordinator-JID in Einstellungen/MXA
+- muc: xml-eingaben entschärfen
+- verschiedene xml-muc verschicken: pos-update, text, ...
+
+- service sammelt auch alle clientdata und schickt sie bei join-service/init über muc?
+- leaveservice, wenn ausloggen (mit alertdialog bei zurück von muc?)
+
+- MXA-Lib statt apk nutzen
