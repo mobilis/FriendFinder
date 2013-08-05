@@ -1,0 +1,43 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="65dp"
+    android:padding="0dp"
+    tools:context=".MUCActivity" >
+
+    <TextView 
+        android:id="@+id/muc_listitem_color"
+        android:background="#ff0000"
+        android:layout_height="65dp"
+        android:layout_width="10dp" >
+    </TextView>
+
+    <TextView
+        android:id="@+id/muc_listitem_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_marginLeft="10dp"
+        android:layout_toRightOf="@+id/muc_listitem_color"
+        android:text="null"
+        android:textAppearance="?android:attr/textAppearanceMedium" />
+    
+    <TextView
+        android:id="@+id/muc_listitem_jid"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/muc_listitem_name"
+        android:layout_below="@+id/muc_listitem_name"
+        android:text="null"
+        android:textColor="#aaaaaa"
+        android:textAppearance="?android:attr/textAppearanceSmall" />
+
+    <TextView
+        android:id="@+id/muc_listitem_position"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/muc_listitem_jid"
+        android:layout_below="@+id/muc_listitem_jid"
+        android:text="null"
+        android:textAppearance="?android:attr/textAppearanceSmall" />
+</RelativeLayout>

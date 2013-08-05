@@ -2,11 +2,11 @@ Generated Codefiles of Service < FriendFinder >:
 gen/client/FriendFinderProxy.java
 gen/client/IFriendFinderIncoming.java
 gen/client/IFriendFinderOutgoing.java
-gen/client/PositionUpdateRequest.java
-gen/client/PositionUpdateResponse.java
 gen/client/JoinServiceRequest.java
 gen/client/JoinServiceResponse.java
 gen/client/LeaveServiceRequest.java
 gen/client/LeaveServiceResponse.java
+gen/client/IsTrackAvailableRequest.java
+gen/client/IsTrackAvailableResponse.java
 
-gen/client/ClientLocation.javagen/client/ClientData.javagen/client/MUCMessage.javagen/client/UpdateClientData.javagen/client/UpdatePosition.javagen/client/ClientDataList.java
+gen/client/ClientLocation.javagen/client/ClientData.javagen/client/ClientDataList.javagen/client/MUCMessage.java

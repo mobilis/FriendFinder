@@ -30,16 +30,18 @@ import org.xmlpull.v1.XmlPullParserFactory;
 import de.tudresden.inf.rn.mobilis.friendfinder.clientstub.FriendFinderProxy;
 import de.tudresden.inf.rn.mobilis.friendfinder.clientstub.IFriendFinderOutgoing;
 import de.tudresden.inf.rn.mobilis.friendfinder.clientstub.IXMPPCallback;
+import de.tudresden.inf.rn.mobilis.friendfinder.clientstub.IsTrackAvailableRequest;
+import de.tudresden.inf.rn.mobilis.friendfinder.clientstub.IsTrackAvailableResponse;
 import de.tudresden.inf.rn.mobilis.friendfinder.clientstub.JoinServiceRequest;
 import de.tudresden.inf.rn.mobilis.friendfinder.clientstub.JoinServiceResponse;
 import de.tudresden.inf.rn.mobilis.friendfinder.clientstub.LeaveServiceRequest;
 import de.tudresden.inf.rn.mobilis.friendfinder.clientstub.LeaveServiceResponse;
+import de.tudresden.inf.rn.mobilis.friendfinder.service.BackgroundService;
 import de.tudresden.inf.rn.mobilis.mxa.callbacks.IXMPPIQCallback;
 import de.tudresden.inf.rn.mobilis.mxa.parcelable.XMPPIQ;
 import de.tudresden.inf.rn.mobilis.xmpp.beans.XMPPBean;
 import de.tudresden.inf.rn.mobilis.xmpp.beans.coordination.CreateNewServiceInstanceBean;
 import de.tudresden.inf.rn.mobilis.xmpp.beans.coordination.MobilisServiceDiscoveryBean;
-import de.voelker.diplom.client2.service.BackgroundService;
 
 import android.os.RemoteException;
 import android.util.Log;
@@ -64,8 +66,6 @@ public class IQProxy {
 	/** The jid of the Coordinator of the Mobilis Server. */
 	private String mServerCoordinatorJid = "mobilis@joyo.diskstation.org/Coordinator";
 
-	private String mServiceNamespace = "";
-
 	/** The local XHuntService used as application controller. */
 	private BackgroundService mService;
 
@@ -80,7 +80,7 @@ public class IQProxy {
 
 	private FriendFinderProxy _proxy;
 
-	private int _usedServiceVersion = 2;
+	private int _usedServiceVersion = 1;
 
 	private Map<String, IXMPPCallback<? extends XMPPBean>> _waitingCallbacks = new HashMap<String, IXMPPCallback<? extends XMPPBean>>();
 
@@ -340,6 +340,9 @@ public class IQProxy {
 		
 		registerXMPPBean(new LeaveServiceRequest());
 		registerXMPPBean(new LeaveServiceResponse());
+		
+		registerXMPPBean(new IsTrackAvailableRequest());
+		registerXMPPBean(new IsTrackAvailableResponse());
 	}
 
 	/**
@@ -639,9 +642,6 @@ public class IQProxy {
 					}
 				}
 			} else {
-				// refer XMPPIQ as XMPPBean to the current active Activities
-				// Callback-Implementation
-				// (hold in XHuntService)
 				mService.getCallbackClass().processPacket(inBean);
 			}
 		}

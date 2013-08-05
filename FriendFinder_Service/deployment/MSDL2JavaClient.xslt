@@ -83,6 +83,8 @@
 				<xsl:value-of select="$newline" /><xsl:value-of select="$newline" />
 			</xsl:if>
 			
+			<xsl:text>import de.tudresden.inf.rn.mobilis.xmpp.beans.XMPPInfo;</xsl:text>
+			<xsl:text>import de.tudresden.inf.rn.mobilis.xmpp.beans.XMPPBean;</xsl:text>
 			<xsl:text>import java.util.List;</xsl:text>
 			<xsl:text>import java.util.ArrayList;</xsl:text>
 		
@@ -336,6 +338,9 @@
 				<xsl:value-of select="$newline" /><xsl:value-of select="$newline" />
 			</xsl:if>
 			
+			<xsl:text>import de.tudresden.inf.rn.mobilis.xmpp.beans.XMPPInfo;</xsl:text>
+			<xsl:text>import de.tudresden.inf.rn.mobilis.xmpp.beans.XMPPBean;</xsl:text>
+			
 			<xsl:text>public interface </xsl:text><xsl:value-of select="$IIncomingInterfaceName" /><xsl:text> {</xsl:text>
 			<xsl:value-of select="$newline" />
 
@@ -396,6 +401,8 @@
 				<xsl:value-of select="$newline" /><xsl:value-of select="$newline" />
 			</xsl:if>
 			
+			<xsl:text>import de.tudresden.inf.rn.mobilis.xmpp.beans.XMPPBean;</xsl:text>
+			
 			<xsl:text>public interface </xsl:text><xsl:value-of select="$IOutgoingInterfaceName" /><xsl:text> {
 
 	void sendXMPPBean( XMPPBean out, IXMPPCallback&lt; ? extends XMPPBean &gt; callback );
@@ -423,6 +430,8 @@
 			</xsl:if>
 	
 			<xsl:text>import org.xmlpull.v1.XmlPullParser;</xsl:text>
+			<xsl:text>import de.tudresden.inf.rn.mobilis.xmpp.beans.XMPPBean;</xsl:text>
+			<xsl:text>import de.tudresden.inf.rn.mobilis.xmpp.beans.XMPPInfo;</xsl:text>
 			<xsl:text>import java.util.List;</xsl:text>
 			<xsl:text>import java.util.ArrayList;</xsl:text>
 			<xsl:value-of select="$newline" /><xsl:value-of select="$newline" />
@@ -501,6 +510,8 @@
 							<xsl:value-of select="$newline" /><xsl:value-of select="$newline" />
 						</xsl:if>
 					
+						<xsl:text>import de.tudresden.inf.rn.mobilis.xmpp.beans.XMPPInfo;</xsl:text>
+						<xsl:text>import de.tudresden.inf.rn.mobilis.xmpp.beans.XMPPBean;</xsl:text>
 						<xsl:text>import org.xmlpull.v1.XmlPullParser;</xsl:text>
 						<xsl:text>import java.util.List;</xsl:text>
 						<xsl:text>import java.util.ArrayList;</xsl:text>

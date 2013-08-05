@@ -1,11 +1,10 @@
 TODO FriendFinder
 
-- Discover nach CreateService
 - Coordinator-JID in Einstellungen/MXA
-- muc: xml-eingaben entschärfen
-- verschiedene xml-muc verschicken: pos-update, text, ...
 
-- service sammelt auch alle clientdata und schickt sie bei join-service/init über muc?
-- leaveservice, wenn ausloggen (mit alertdialog bei zurück von muc?)
+- service sammelt auch alle clientdata und schickt sie bei join-service
 
-- MXA-Lib statt apk nutzen
+
+TODO EET
+- beliebig viele listener registrierbar
+- eet: locationmanager-funktionen nachbauen

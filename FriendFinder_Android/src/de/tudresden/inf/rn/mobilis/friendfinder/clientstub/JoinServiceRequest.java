@@ -1,9 +1,6 @@
 package de.tudresden.inf.rn.mobilis.friendfinder.clientstub;
 
-import org.xmlpull.v1.XmlPullParser;
-import de.tudresden.inf.rn.mobilis.xmpp.beans.XMPPBean;
-
-import java.util.List;import java.util.ArrayList;
+import de.tudresden.inf.rn.mobilis.xmpp.beans.XMPPInfo;import de.tudresden.inf.rn.mobilis.xmpp.beans.XMPPBean;import org.xmlpull.v1.XmlPullParser;import java.util.List;import java.util.ArrayList;
 
 public class JoinServiceRequest extends XMPPBean {
 

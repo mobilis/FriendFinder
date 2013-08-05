@@ -9,7 +9,7 @@
         android:id="@+id/muc_listView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_above="@+id/muc_editText"
+        android:layout_above="@+id/muc_input"
         android:paddingBottom="100dp"
         android:scrollbarAlwaysDrawVerticalTrack="true"
         android:scrollbarStyle="insideInset"
@@ -24,22 +24,31 @@
         android:orientation="horizontal"
         android:layout_above="@+id/muc_input" >
         <Button 
-            android:id="@+id/muc_btn_pos"
-            android:layout_width="50dp"
+            android:id="@+id/muc_btn_map"
+            android:layout_width="100dp"
             android:layout_height="match_parent"
-            android:background="@drawable/border"
-            android:text="GPS"
+            android:background="#55000000"
+            android:text="@string/muc_btn_map"
             android:textColor="#ffffff"
             />
         <Button 
             android:id="@+id/muc_btn_cd"
-            android:layout_width="50dp"
+            android:layout_width="100dp"
             android:layout_height="match_parent"
-            android:background="@drawable/border"
-            android:text="ClientData"
+            android:background="#55000000"
+            android:text="@string/muc_btn_cd"
             android:layout_marginLeft="5dp"
             android:textColor="#ffffff"
             />
+
+        <Switch
+            android:id="@+id/muc_track_switch"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:paddingLeft="10dp"
+            android:text="@string/muc_switch"
+            android:textColor="#ffffff" />
+
     </LinearLayout>
     
     <LinearLayout
@@ -52,21 +61,21 @@
 
         <EditText
             android:id="@+id/muc_editText"
-            android:layout_width="wrap_content"
+            android:layout_width="0dip"
             android:layout_height="wrap_content"
             android:layout_marginBottom="5dp"
             android:layout_weight="1.0"
             android:ems="10"
-            android:hint="Text"
+            android:hint="@string/muc_input_hint"
             android:textColor="#ffffff"
-            android:textColorHint="#cccccc" />
+            android:textColorHint="#777777" />
 
         <Button
             android:id="@+id/muc_btn_send"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:background="#555555"
-            android:text="Senden"
+            android:text="@string/muc_btn_send"
             android:textColor="#ffffff" />
     </LinearLayout>
 

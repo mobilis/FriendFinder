@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="de.voelker.diplom.client2"
+    package="de.tudresden.inf.rn.mobilis.friendfinder"
     android:versionCode="1"
     android:versionName="1.0" >
 
@@ -9,28 +9,29 @@
         android:targetSdkVersion="17" />
 
     <permission
-        android:name="de.voelker.diplom.client2.permission.MAPS_RECEIVE"
+        android:name="de.tudresden.inf.rn.mobilis.friendfinder.permission.MAPS_RECEIVE"
         android:protectionLevel="signature" />
-	<uses-permission android:name="de.voelker.diplom2.client.permission.MAPS_RECEIVE"/>
+
+    <uses-permission android:name="de.tudresden.inf.rn.mobilis.friendfinder.permission.MAPS_RECEIVE" />
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="com.google.android.providers.gsf.permission.READ_GSERVICES" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="com.google.android.gms.permission.ACTIVITY_RECOGNITION" />
 
     <uses-feature
         android:glEsVersion="0x00020000"
         android:required="true" />
-    
-    
+
     <application
         android:allowBackup="true"
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
         android:theme="@style/AppTheme" >
         <activity
-            android:name="de.voelker.diplom.client2.MainActivity"
+            android:name="de.tudresden.inf.rn.mobilis.friendfinder.MainActivity"
             android:label="@string/app_name" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -38,34 +39,88 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
+        <activity
+            android:name="de.tudresden.inf.rn.mobilis.friendfinder.MUCActivity"
+            android:label="@string/title_activity_muc" >
+        </activity>
+        <activity
+            android:name="de.tudresden.inf.rn.mobilis.friendfinder.MapActivity"
+            android:label="@string/title_activity_map" >
+        </activity>
+        <activity
+            android:name="de.tudresden.inf.rn.mobilis.friendfinder.ClientDataActivity"
+            android:label="@string/title_activity_cd" >
+        </activity>
+        
         <service
-            android:name="de.voelker.diplom.client2.service.BackgroundService"
+            android:name="de.tudresden.inf.rn.mobilis.friendfinder.service.BackgroundService"
             android:exported="false" >
             <intent-filter>
                 <action android:name="de.tudresden.inf.rn.mobilis.android.xhunt.service.IXHuntService" >
                 </action>
             </intent-filter>
+        </service>     
+         <service
+            android:name="de.tudresden.inf.rn.mobilis.eet.ActivityRecognitionIntentService"
+            android:exported="false"
+            android:label="@string/app_name" >
+        </service>
+        
+         <!-- MXA Activities and Services -->
+		 
+		 <service
+            android:name="de.tudresden.inf.rn.mobilis.mxa.XMPPRemoteService"
+            android:enabled="true"
+            android:exported="false">
         </service>
 
         <activity
-            android:name="de.voelker.diplom.client2.MUCActivity"
-            android:label="@string/title_activity_muc" >
+            android:name="de.tudresden.inf.rn.mobilis.mxa.activities.PreferencesClient"
+            android:enabled="true"
+            android:exported="false" >
+            <intent-filter>
+                <action android:name="de.tudresden.inf.rn.mobilis.mxa.PREFERENCES" >
+                </action>
+
+                <category android:name="android.intent.category.PREFERENCE" >
+                </category>
+                <category android:name="android.intent.category.DEFAULT" >
+                </category>
+            </intent-filter>
+        </activity>
+
+        <provider
+		   android:name="de.tudresden.inf.rn.mobilis.mxa.provider.RosterProvider"
+		   android:authorities="de.tudresden.inf.rn.mobilis.mxa.provider.roster.de.tudresden.inf.rn.mobilis.friendfinder"
+		   android:exported="false">
+		 </provider>
+		 <provider
+		   android:name="de.tudresden.inf.rn.mobilis.mxa.provider.MessageProvider"
+		   android:authorities="de.tudresden.inf.rn.mobilis.mxa.provider.messages.de.tudresden.inf.rn.mobilis.friendfinder"
+		   android:exported="false">
+		 </provider>
+        
+        <activity
+            android:name="de.tudresden.inf.rn.mobilis.mxa.activities.FileChooserActivity"
+            android:screenOrientation="portrait" >
         </activity>
         
         <activity
-            android:name="de.voelker.diplom.client2.MapActivity"
-            android:label="@string/title_activity_map" >
+            android:name="de.tudresden.inf.rn.mobilis.mxa.activities.Setup"
+            android:screenOrientation="portrait" >
         </activity>
-        
         <activity
-            android:name="de.voelker.diplom.client2.ClientDataActivity"
-            android:label="@string/title_activity_cd" >
+            android:name="de.tudresden.inf.rn.mobilis.mxa.activities.SetupBasics"
+            android:screenOrientation="portrait" >
+        </activity>
+        <activity
+            android:name="de.tudresden.inf.rn.mobilis.mxa.activities.SetupComplete"
+            android:screenOrientation="portrait" >
         </activity>
         
         <meta-data
             android:name="com.google.android.maps.v2.API_KEY"
-            android:value="AIzaSyA6KmWa9sr0lY5DWiHYJMAFnIesJdPtrFc" />
+            android:value="AIzaSyCh2txQH6PNFqrxNtKWcMSRCuGdTZlajFQ" />
     </application>
 
 </manifest>

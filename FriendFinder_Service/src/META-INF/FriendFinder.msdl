@@ -1,18 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<msdl:description targetNamespace="http://joyo.homeftp.org/EET_Service"
-	xmlns:msdl="http://mobilis.inf.tu-dresden.de/msdl/" 
-	xmlns:xmpp="http://mobilis.inf.tu-dresden.de/xmpp/"
-	xmlns:xs="http://www.w3.org/2001/XMLSchema" 
-	xmlns:tns="http://joyo.diskstation.org/FriendFinder_Service"
+<msdl:description targetNamespace="http://mobilis.inf.tu-dresden.de/FriendFinder_Service"
+	xmlns:msdl="http://mobilis.inf.tu-dresden.de/msdl/" xmlns:xmpp="http://mobilis.inf.tu-dresden.de/xmpp/"
+	xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:tns="http://mobilis.inf.tu-dresden.de/FriendFinder_Service"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://mobilis.inf.tu-dresden.de/msdl/ http://mobilis.inf.tu-dresden.de/msdl.xsd ">
 	<msdl:types>
-		<xs:schema targetNamespace="http://joyo.diskstation.org/FriendFinder_Service">
+		<xs:schema targetNamespace="http://mobilis.inf.tu-dresden.de/FriendFinder_Service">
 			<xs:complexType name="ClientLocation">
 				<xs:sequence>
 					<xs:element name="Lat" type="xs:double" />
 					<xs:element name="Lng" type="xs:double" />
 					<xs:element name="Accuracy" type="xs:double" />
+					<xs:element name="Activity" type="xs:string" />
+					<xs:element name="Speed" type="xs:float" />
+					<xs:element name="time" type="xs:long" />
 				</xs:sequence>
 			</xs:complexType>
 			<xs:complexType name="ClientData">
@@ -24,6 +25,14 @@
 					<xs:element name="clientLocation" type="tns:ClientLocation" />
 				</xs:sequence>
 			</xs:complexType>
+			<xs:complexType name="ClientDataList">
+				<xs:sequence>
+					<xs:element name="clientData" type="tns:ArrayList(ClientData)" />
+				</xs:sequence>
+			</xs:complexType>
+
+			<!-- eet for muc -->
+
 			<xs:complexType name="MUCMessage">
 				<xs:sequence>
 					<xs:element name="jid" type="xs:string" />
@@ -31,40 +40,29 @@
 					<xs:element name="clientData" type="tns:ClientData" />
 				</xs:sequence>
 			</xs:complexType>
+		
+			<!-- eet central update communication -->
 			
-			<xs:complexType name="UpdateClientData">
-				<xs:sequence>
-					<xs:element name="jid" type="xs:string" />
-					<xs:element name="clientData" type="tns:ClientData" />
-				</xs:sequence>
-			</xs:complexType>
-			<xs:complexType name="UpdatePosition">
-				<xs:sequence>
-					<xs:element name="jid" type="xs:string" />
-					<xs:element name="location" type="tns:ClientLocation" />
-				</xs:sequence>
-			</xs:complexType>
-			
-			<xs:complexType name="ClientDataList">
-				<xs:sequence>
-					<xs:element name="clientData" type="tns:ArrayList(ClientData)" />
-				</xs:sequence>
-			</xs:complexType>
-			<xs:element name="PositionUpdateRequest">
+			<xs:element name="IsTrackAvailableRequest">
 				<xs:complexType>
 					<xs:sequence>
-						<xs:element name="clientData" type="tns:ClientData" />
+						<xs:element name="position" type="tns:ClientLocation" />
+						<xs:element name="trackId" type="xs:int" />
 					</xs:sequence>
 				</xs:complexType>
 			</xs:element>
-			<xs:element name="PositionUpdateResponse">
+			<xs:element name="IsTrackAvailableResponse">
 				<xs:complexType>
 					<xs:sequence>
-						<xs:element name="clientData" type="tns:ClientDataList" />
+						<xs:element name="result" type="xs:boolean" />
+						<xs:element name="trackId" type="xs:int" />
+						<xs:element name="gpxTrack" type="tns:GPXTrack" />
 					</xs:sequence>
 				</xs:complexType>
 			</xs:element>
 			
+			<!-- friendfinder -->
+
 			<xs:element name="JoinServiceRequest">
 				<xs:complexType>
 					<xs:sequence>
@@ -93,15 +91,10 @@
 					</xs:sequence>
 				</xs:complexType>
 			</xs:element>
-			
+
 		</xs:schema>
 	</msdl:types>
-	<msdl:interface name="THInterface">	
-		<msdl:operation name="PositionUpdate" pattern="http://www.w3.org/ns/wsdl/in-out">
-			<msdl:input element="tns:PositionUpdateRequest" />
-			<msdl:output element="tns:PositionUpdateResponse" />
-		</msdl:operation>
-		
+	<msdl:interface name="THInterface">
 		<msdl:operation name="JoinService" pattern="http://www.w3.org/ns/wsdl/in-out">
 			<msdl:input element="tns:JoinServiceRequest" />
 			<msdl:output element="tns:JoinServiceResponse" />
@@ -110,30 +103,34 @@
 			<msdl:input element="tns:LeaveServiceRequest" />
 			<msdl:output element="tns:LeaveServiceResponse" />
 		</msdl:operation>
-		
+
+		<msdl:operation name="IsTrackAvailable" pattern="http://www.w3.org/ns/wsdl/in-out">
+			<msdl:input element="tns:IsTrackAvailableRequest" />
+			<msdl:output element="tns:IsTrackAvailableResponse" />
+		</msdl:operation>
+
 	</msdl:interface>
 	<msdl:binding name="THBinding" interface="tns:THInterface"
 		type="http://mobilis.inf.tu-dresden.de/xmpp/">
-		
-		<msdl:operation ref="tns:PositionUpdate" xmpp:ident="eet:iq:position_update">
-			<msdl:input xmpp:type="set" />
-			<msdl:output xmpp:type="result" />
-		</msdl:operation>
-		
+
 		<msdl:operation ref="tns:JoinService" xmpp:ident="eet:iq:join_service">
 			<msdl:input xmpp:type="set" />
 			<msdl:output xmpp:type="result" />
 		</msdl:operation>
-		
+
 		<msdl:operation ref="tns:LeaveService" xmpp:ident="eet:iq:leave_service">
 			<msdl:input xmpp:type="set" />
 			<msdl:output xmpp:type="result" />
 		</msdl:operation>
-		
+
+		<msdl:operation ref="tns:IsTrackAvailable" xmpp:ident="eet:iq:is_track_available">
+			<msdl:input xmpp:type="set" />
+			<msdl:output xmpp:type="result" />
+		</msdl:operation>
+
 	</msdl:binding>
 	<msdl:service name="FriendFinder" interface="tns:THInterface"
-		ident="http://joyo.diskstation.org#services/FriendFinder"
-		version="1">
+		ident="http://mobilis.inf.tu-dresden.de#services/FriendFinder" version="1">
 		<msdl:endpoint name="THEndpoint" binding="tns:THBinding" />
 		<msdl:dependencies />
 	</msdl:service>

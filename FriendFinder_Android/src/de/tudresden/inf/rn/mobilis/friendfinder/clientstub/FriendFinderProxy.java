@@ -1,8 +1,7 @@
 package de.tudresden.inf.rn.mobilis.friendfinder.clientstub;
 
-import java.util.List;import java.util.ArrayList;
-import de.tudresden.inf.rn.mobilis.xmpp.beans.XMPPBean;
-public class FriendFinderProxy {
+import de.tudresden.inf.rn.mobilis.eet.IEETProxy;
+import de.tudresden.inf.rn.mobilis.xmpp.beans.XMPPInfo;import de.tudresden.inf.rn.mobilis.xmpp.beans.XMPPBean;import java.util.List;import java.util.ArrayList;public class FriendFinderProxy implements IEETProxy{
 
 	private IFriendFinderOutgoing _bindingStub;
 
@@ -16,18 +15,6 @@ public class FriendFinderProxy {
 		return _bindingStub;
 	}
 
-
-	public XMPPBean PositionUpdate( String toJid, ClientData clientData, IXMPPCallback< PositionUpdateResponse > callback ) {
-		if ( null == _bindingStub || null == callback )
-			return null;
-
-		PositionUpdateRequest out = new PositionUpdateRequest( clientData );
-		out.setTo( toJid );
-
-		_bindingStub.sendXMPPBean( out, callback );
-
-		return out;
-	}
 
 	public XMPPBean JoinService( String toJid, String clientJID, IXMPPCallback< JoinServiceResponse > callback ) {
 		if ( null == _bindingStub || null == callback )
@@ -46,6 +33,18 @@ public class FriendFinderProxy {
 			return null;
 
 		LeaveServiceRequest out = new LeaveServiceRequest(  );
+		out.setTo( toJid );
+
+		_bindingStub.sendXMPPBean( out, callback );
+
+		return out;
+	}
+
+	public XMPPBean IsTrackAvailable( String toJid, ClientLocation position, int trackId, IXMPPCallback< IsTrackAvailableResponse > callback ) {
+		if ( null == _bindingStub || null == callback )
+			return null;
+
+		IsTrackAvailableRequest out = new IsTrackAvailableRequest( position, trackId );
 		out.setTo( toJid );
 
 		_bindingStub.sendXMPPBean( out, callback );

@@ -1,9 +1,6 @@
 package de.tudresden.inf.rn.mobilis.friendfinder.clientstub;
 
-import org.xmlpull.v1.XmlPullParser;
-import de.tudresden.inf.rn.mobilis.xmpp.beans.XMPPInfo;
-
-import java.util.List;import java.util.ArrayList;
+import org.xmlpull.v1.XmlPullParser;import de.tudresden.inf.rn.mobilis.xmpp.beans.XMPPBean;import de.tudresden.inf.rn.mobilis.xmpp.beans.XMPPInfo;import java.util.List;import java.util.ArrayList;
 
 public class ClientData implements XMPPInfo {
 
@@ -79,7 +76,7 @@ public class ClientData implements XMPPInfo {
 		return CHILD_ELEMENT;
 	}
 
-	public static final String NAMESPACE = "http://joyo.diskstation.org#services/FriendFinder#type:ClientData";
+	public static final String NAMESPACE = "http://mobilis.inf.tu-dresden.de#services/FriendFinder#type:ClientData";
 
 	@Override
 	public String getNamespace() {

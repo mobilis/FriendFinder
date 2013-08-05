@@ -21,12 +21,12 @@ import de.tudresden.inf.rn.mobilis.friendfinder.proxy.ClientDataList;
 import de.tudresden.inf.rn.mobilis.friendfinder.proxy.FriendFinderProxy;
 import de.tudresden.inf.rn.mobilis.friendfinder.proxy.IFriendFinderIncoming;
 import de.tudresden.inf.rn.mobilis.friendfinder.proxy.IFriendFinderOutgoing;
+import de.tudresden.inf.rn.mobilis.friendfinder.proxy.IsTrackAvailableRequest;
+import de.tudresden.inf.rn.mobilis.friendfinder.proxy.IsTrackAvailableResponse;
 import de.tudresden.inf.rn.mobilis.friendfinder.proxy.JoinServiceRequest;
 import de.tudresden.inf.rn.mobilis.friendfinder.proxy.JoinServiceResponse;
 import de.tudresden.inf.rn.mobilis.friendfinder.proxy.LeaveServiceRequest;
 import de.tudresden.inf.rn.mobilis.friendfinder.proxy.LeaveServiceResponse;
-import de.tudresden.inf.rn.mobilis.friendfinder.proxy.PositionUpdateRequest;
-import de.tudresden.inf.rn.mobilis.friendfinder.proxy.PositionUpdateResponse;
 import de.tudresden.inf.rn.mobilis.server.services.MobilisService;
 import de.tudresden.inf.rn.mobilis.xmpp.beans.IXMPPCallback;
 import de.tudresden.inf.rn.mobilis.xmpp.beans.ProxyBean;
@@ -38,11 +38,14 @@ import de.tudresden.inf.rn.mobilis.xmpp.server.BeanProviderAdapter;
 
 public class FriendFinder_Service extends MobilisService {
 
+	private final static Logger LOG = Logger.getLogger(FriendFinder_Service.class
+			.getCanonicalName());
+	
 	private FriendFinderProxy _proxy;
 	private Map<String, IXMPPCallback<? extends XMPPBean>> _waitingCallbacks;
 
 	private Map<String, ClientData> clients;
-	private ArrayList<String> clientJID;
+	private HashMap<String, ClientData> clientJID;
 
 	private MultiUserChat muc;
 	private String mucDomain = "conference.joyo.diskstation.org";
@@ -50,12 +53,11 @@ public class FriendFinder_Service extends MobilisService {
 	private long serviceID = 1;
 	private String serviceName = "FriendFinder";
 	private String mucJID = "test@" + mucDomain;
-
 	private String[] colors = { "#ff0000", "#00ff00", "#0000ff", "#ffff00",
 			"#ff00ff", "#00ffff" };
-
-	private final static Logger LOG = Logger.getLogger(FriendFinder_Service.class
-			.getCanonicalName());
+	private int lastColor = 0;
+	
+	private EET_Service eet;
 
 	public FriendFinder_Service() {
 		_proxy = new FriendFinderProxy(_FriendFinderServiceOutgoingStub);
@@ -63,12 +65,15 @@ public class FriendFinder_Service extends MobilisService {
 
 		clients = Collections
 				.synchronizedMap(new HashMap<String, ClientData>());
-		clientJID = new ArrayList<String>();
+		clientJID = new HashMap<String, ClientData>();
+		
+		eet = new EET_Service();
 	}
 
 	@Override
 	public void startup() throws Exception {
 		super.startup();
+		eet.startup();
 
 		serviceName = getAgent().getIdent();
 		serviceID = System.currentTimeMillis();
@@ -85,9 +90,11 @@ public class FriendFinder_Service extends MobilisService {
 
 		(new BeanProviderAdapter(new ProxyBean(JoinServiceRequest.NAMESPACE,
 				JoinServiceRequest.CHILD_ELEMENT))).addToProviderManager();
-		(new BeanProviderAdapter(new ProxyBean(PositionUpdateRequest.NAMESPACE,
-				PositionUpdateRequest.CHILD_ELEMENT))).addToProviderManager();
+		(new BeanProviderAdapter(new ProxyBean(LeaveServiceRequest.NAMESPACE,
+				LeaveServiceRequest.CHILD_ELEMENT))).addToProviderManager();
 
+		eet.registerPacketListener();
+		
 		IQListener iqListener = new IQListener();
 		PacketTypeFilter locFil = new PacketTypeFilter(IQ.class);
 		getAgent().getConnection().addPacketListener(iqListener, locFil);
@@ -96,6 +103,8 @@ public class FriendFinder_Service extends MobilisService {
 
 	@Override
 	public void shutdown() {
+		eet.shutdown();
+		
 		LOG.info("shutting down");
 	}
 
@@ -151,34 +160,19 @@ public class FriendFinder_Service extends MobilisService {
 	private IFriendFinderIncoming _FriendFinderIncomingStub = new IFriendFinderIncoming() {
 
 		@Override
-		public XMPPBean onPositionUpdate(PositionUpdateRequest in) {
-
-			// Throw Error, if client not in list?
-			clients.put(in.getFrom(), in.getClientData());
-
-			ClientDataList cdl = new ClientDataList(new ArrayList<ClientData>(
-					clients.values()));
-
-			PositionUpdateResponse ob = new PositionUpdateResponse();
-			ob.setId(in.getId());
-			ob.setClientData(cdl);
-			return ob;
-		}
-
-		@Override
 		public XMPPBean onJoinService(JoinServiceRequest in) {
 
 			LOG.info(in.getFrom() + " has joined service");
 
-			if (!clientJID.contains(in.getClientJID()))
-				clientJID.add(in.getClientJID());
-			int no = clientJID.indexOf(in.getClientJID());
+			ClientData cd = new ClientData();
+			cd.setColor(colors[(++lastColor) % colors.length]);
+			clientJID.put(in.getClientJID(), cd);
 
 			JoinServiceResponse out = new JoinServiceResponse();
 			out.setId(in.getId());
 			out.setMucJID(mucJID);
 			out.setMucPwd(mucPwd);
-			out.setColor(colors[( no % colors.length)]);
+			out.setColor(cd.getColor());
 
 			// LOG.info("onJoinService2");
 
@@ -190,7 +184,7 @@ public class FriendFinder_Service extends MobilisService {
 		public XMPPBean onLeaveService(LeaveServiceRequest in) {
 			LOG.info(in.getFrom() + "  leave the service");
 			
-			if (clientJID.contains(in.getFrom()))
+			if (clientJID.containsKey(in.getFrom()))
 				clientJID.remove(in.getFrom());
 
 			// todo
@@ -200,6 +194,11 @@ public class FriendFinder_Service extends MobilisService {
 			return out;
 		}
 
+		@Override
+		public XMPPBean onIsTrackAvailable(IsTrackAvailableRequest in) {
+			// TODO Auto-generated method stub
+			return null;
+		}
 	};
 
 	private class IQListener implements PacketListener {
@@ -210,7 +209,6 @@ public class FriendFinder_Service extends MobilisService {
 
 			if (packet instanceof BeanIQAdapter) {
 				XMPPBean inBean = ((BeanIQAdapter) packet).getBean();
-
 				// LOG.info("XMPPBean instanceOf: " +
 				// inBean.getClass().toString());
 
@@ -219,36 +217,19 @@ public class FriendFinder_Service extends MobilisService {
 					// LOG.info("Namespace: " + proxyBean.getNamespace() +
 					// " ChildElement: " + proxyBean.getChildElement());
 
-					if (proxyBean.isTypeOf(PositionUpdateRequest.NAMESPACE,
-							PositionUpdateRequest.CHILD_ELEMENT)) {
-
-						PositionUpdateResponse response = (PositionUpdateResponse) _FriendFinderIncomingStub
-								.onPositionUpdate((PositionUpdateRequest) proxyBean
-										.parsePayload(new PositionUpdateRequest()));
-
-						// Send response
-						_proxy.PositionUpdate(proxyBean.getFrom(),
-								response.getId(), response.getClientData());
-
+					if (eet.processPacket(proxyBean, _proxy)){
+						// do nothing
 					} else if (proxyBean.isTypeOf(JoinServiceRequest.NAMESPACE,
 							JoinServiceRequest.CHILD_ELEMENT)) {
 
-						// LOG.info("JoinServiceResponse1");
-
-						// Forward incoming Bean to ITreasureHuntIncoming and
-						// receive response
 						JoinServiceResponse response = (JoinServiceResponse) _FriendFinderIncomingStub
 								.onJoinService((JoinServiceRequest) proxyBean
 										.parsePayload(new JoinServiceRequest()));
 
-						// LOG.info("JoinServiceResponse2");
-
-						// Send response
 						_proxy.JoinService(proxyBean.getFrom(),
 								response.getId(), response.getMucJID(),
 								response.getMucPwd(), response.getColor());
 
-						// LOG.info("JoinServiceResponse3");
 					} else if (proxyBean.isTypeOf(LeaveServiceRequest.NAMESPACE,
 							LeaveServiceRequest.CHILD_ELEMENT)) {
 

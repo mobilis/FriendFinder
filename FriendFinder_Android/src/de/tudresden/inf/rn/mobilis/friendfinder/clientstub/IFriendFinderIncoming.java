@@ -1,10 +1,6 @@
 package de.tudresden.inf.rn.mobilis.friendfinder.clientstub;
 
-public interface IFriendFinderIncoming {
-
-	void onPositionUpdate( PositionUpdateResponse in );
-
-	void onPositionUpdateError( PositionUpdateRequest in);
+import de.tudresden.inf.rn.mobilis.xmpp.beans.XMPPInfo;import de.tudresden.inf.rn.mobilis.xmpp.beans.XMPPBean;public interface IFriendFinderIncoming {
 
 	void onJoinService( JoinServiceResponse in );
 
@@ -13,5 +9,9 @@ public interface IFriendFinderIncoming {
 	void onLeaveService( LeaveServiceResponse in );
 
 	void onLeaveServiceError( LeaveServiceRequest in);
+
+	void onIsTrackAvailable( IsTrackAvailableResponse in );
+
+	void onIsTrackAvailableError( IsTrackAvailableRequest in);
 
 }

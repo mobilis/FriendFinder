@@ -31,6 +31,7 @@ import android.os.Message;
 import android.os.Messenger;
 import android.os.RemoteException;
 import android.util.Log;
+import de.tudresden.inf.rn.mobilis.friendfinder.service.BackgroundService;
 import de.tudresden.inf.rn.mobilis.mxa.ConstMXA.MessageItems;
 import de.tudresden.inf.rn.mobilis.mxa.IXMPPService;
 import de.tudresden.inf.rn.mobilis.mxa.MXAController;
@@ -38,7 +39,6 @@ import de.tudresden.inf.rn.mobilis.mxa.MXAListener;
 import de.tudresden.inf.rn.mobilis.mxa.parcelable.XMPPIQ;
 import de.tudresden.inf.rn.mobilis.mxa.services.callbacks.IFileCallback;
 import de.tudresden.inf.rn.mobilis.mxa.services.multiuserchat.IMultiUserChatService;
-import de.voelker.diplom.client2.service.BackgroundService;
 
 /**
  * The Class MXAProxy is a wrapper to simplify the handling with the MXA.
@@ -73,9 +73,6 @@ public class MXAProxy implements MXAListener {
 
 	/** The xmpp disconnect handlers to notify if xmpp is disconnected. */
 	private ArrayList<Handler> xmppDisconnectHandlers;
-
-	/** True if game is in static mode (for testing purposes only). */
-	private boolean isStaticMode;
 
 	/** The nickname of the player. */
 	private String nickname = "";
@@ -145,14 +142,14 @@ public class MXAProxy implements MXAListener {
 
 			if (roomID != null && password != null
 					&& this.getNickname() != null) {
-				iXMPPService.getMultiUserChatService().joinRoom(roomID,
+				mucS.joinRoom(roomID,
 						password);
 
 				// change the nickname in chat to the nickname of the user if
 				// someone
 				// was configured or to the users XMPP name without domain and
 				// resource
-				iXMPPService.getMultiUserChatService().changeNickname(
+				mucS.changeNickname(
 						roomID,
 						(this.getNickname() != null && this.getNickname()
 								.length() > 0) ? this.getNickname() : this
@@ -195,8 +192,7 @@ public class MXAProxy implements MXAListener {
 				// / Connect the MXA Remote Service to the XMPP Server
 				iXMPPService.connect(mConnectMessenger);
 			} catch (RemoteException e) {
-				Log.e(this.getClass().getSimpleName(),
-						"MXA Remote Service couldn't connect to XMPP Server");
+				Log.e(TAG, "MXA Remote Service couldn't connect to XMPP Server");
 			}
 		}
 	}
@@ -228,8 +224,13 @@ public class MXAProxy implements MXAListener {
 	 * @return the nickname
 	 */
 	public String getNickname() {
-		return (nickname != null && nickname.length() > 0) ? nickname
-				: getXmppJid().substring(0, getXmppJid().indexOf("@"));
+		if(nickname != null && nickname.length() > 0)
+			return nickname;
+		else{
+			int idx = getXmppJid().indexOf("@");
+			if(idx == -1) return getXmppJid();
+			else return getXmppJid().substring(0, idx);
+		}
 	}
 
 	/**
@@ -297,15 +298,6 @@ public class MXAProxy implements MXAListener {
 		return this.mIsMUCConnected;
 	}
 
-	/**
-	 * Checks if game is running in static mode.
-	 * 
-	 * @return true, if game is in static mode
-	 */
-	public boolean isStaticMode() {
-		return this.isStaticMode;
-	}
-
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -356,7 +348,7 @@ public class MXAProxy implements MXAListener {
 			final Handler resultHandler, final String filter) {
 		// create a cursor for the chat messages which arrives in MXA
 		final Cursor msgCursor = activity.getContentResolver().query(
-				MessageItems.CONTENT_URI, null, null, null,
+				MessageItems.contentUri, null, null, null,
 				MessageItems.DEFAULT_SORT_ORDER);
 		activity.startManagingCursor(msgCursor);
 
@@ -494,16 +486,6 @@ public class MXAProxy implements MXAListener {
 	 */
 	public void setNickname(String nick) {
 		this.nickname = nick;
-	}
-
-	/**
-	 * Sets the static mode for this game.
-	 * 
-	 * @param isStaticMode
-	 *            true for playing in static mode
-	 */
-	public void setStaticMode(boolean isStaticMode) {
-		this.isStaticMode = isStaticMode;
 	}
 
 	/**

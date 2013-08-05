@@ -1,22 +1,25 @@
 package de.tudresden.inf.rn.mobilis.friendfinder.proxy;
 
-import org.xmlpull.v1.XmlPullParser;
-import de.tudresden.inf.rn.mobilis.xmpp.beans.XMPPInfo;
-
-import java.util.List;import java.util.ArrayList;
+import de.tudresden.inf.rn.mobilis.xmpp.beans.XMPPInfo;import de.tudresden.inf.rn.mobilis.xmpp.beans.XMPPBean;import org.xmlpull.v1.XmlPullParser;import java.util.List;import java.util.ArrayList;
 
 public class ClientLocation implements XMPPInfo {
 
 	private double Lat = Double.MIN_VALUE;
 	private double Lng = Double.MIN_VALUE;
 	private double Accuracy = Double.MIN_VALUE;
+	private String Activity = null;
+	private float Speed = Float.MIN_VALUE;
+	private long time = Long.MIN_VALUE;
 
 
-	public ClientLocation( double Lat, double Lng, double Accuracy ) {
+	public ClientLocation( double Lat, double Lng, double Accuracy, String Activity, float Speed, long time ) {
 		super();
 		this.Lat = Lat;
 		this.Lng = Lng;
 		this.Accuracy = Accuracy;
+		this.Activity = Activity;
+		this.Speed = Speed;
+		this.time = time;
 	}
 
 	public ClientLocation(){}
@@ -44,6 +47,15 @@ public class ClientLocation implements XMPPInfo {
 				else if (tagName.equals( "Accuracy" ) ) {
 					this.Accuracy = Double.parseDouble( parser.nextText() );
 				}
+				else if (tagName.equals( "Activity" ) ) {
+					this.Activity = parser.nextText();
+				}
+				else if (tagName.equals( "Speed" ) ) {
+					this.Speed = Float.parseFloat( parser.nextText() );
+				}
+				else if (tagName.equals( "time" ) ) {
+					this.time = Long.parseLong( parser.nextText() );
+				}
 				else
 					parser.next();
 				break;
@@ -69,7 +81,7 @@ public class ClientLocation implements XMPPInfo {
 		return CHILD_ELEMENT;
 	}
 
-	public static final String NAMESPACE = "http://joyo.diskstation.org#services/FriendFinder#type:ClientLocation";
+	public static final String NAMESPACE = "http://mobilis.inf.tu-dresden.de#services/FriendFinder#type:ClientLocation";
 
 	@Override
 	public String getNamespace() {
@@ -91,6 +103,18 @@ public class ClientLocation implements XMPPInfo {
 		sb.append( "<Accuracy>" )
 			.append( this.Accuracy )
 			.append( "</Accuracy>" );
+
+		sb.append( "<Activity>" )
+			.append( this.Activity )
+			.append( "</Activity>" );
+
+		sb.append( "<Speed>" )
+			.append( this.Speed )
+			.append( "</Speed>" );
+
+		sb.append( "<time>" )
+			.append( this.time )
+			.append( "</time>" );
 
 		return sb.toString();
 	}
@@ -119,6 +143,30 @@ public class ClientLocation implements XMPPInfo {
 
 	public void setAccuracy( double Accuracy ) {
 		this.Accuracy = Accuracy;
+	}
+
+	public String getActivity() {
+		return this.Activity;
+	}
+
+	public void setActivity( String Activity ) {
+		this.Activity = Activity;
+	}
+
+	public float getSpeed() {
+		return this.Speed;
+	}
+
+	public void setSpeed( float Speed ) {
+		this.Speed = Speed;
+	}
+
+	public long getTime() {
+		return this.time;
+	}
+
+	public void setTime( long time ) {
+		this.time = time;
 	}
 
 }
