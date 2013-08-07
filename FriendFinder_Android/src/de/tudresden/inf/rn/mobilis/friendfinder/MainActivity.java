@@ -230,7 +230,7 @@ public class MainActivity extends Activity implements ICallback,
 		MXAController.get().setSharedPreferencesName(MainActivity.this,
 				"de.tudresden.inf.rn.mobilis.friendfinder.mxa");
 		if (!MXAController.get().checkSetupDone()) {
-			MXAController.get().setPort("5222");
+			//MXAController.get().setPort("5222");
 			MXAController.get().setHost("joyo.diskstation.org");
 			MXAController.get().setService("");
 			MXAController.get().setResource("MXA");
