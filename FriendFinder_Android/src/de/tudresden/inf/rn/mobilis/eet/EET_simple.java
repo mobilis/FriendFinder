@@ -14,37 +14,60 @@ import android.os.Message;
 import android.util.Log;
 import android.widget.Toast;
 
-public class EET_simple implements LocationProxy, LocationListener {
+/**
+ * class provides a simple gps-tracking and gpx-emulation with the same interface like the 
+ * complex tracking-class EET
+ */
+public class EET_simple implements ILocationProxy, LocationListener {
 	private static final String TAG = "EET_simpe";
-
+	/**
+	 * save the gps-positions and save them in a gpx-File
+	 */
 	private GPXTrack mGPX;
-
+	/**
+	 * LocationManager for access to the GPS-Unit
+	 */
 	private LocationManager locMan;
+
 	private Context ctx;
+	/**
+	 * last received location
+	 */
 	private Location lastLoc;
+	/**
+	 * extern LocationListener, registered from the BackgroundService
+	 * called at every location-updates
+	 */
 	private LocationListener externListener;
-	
+	/**
+	 * the gps-update-interval
+	 */
 	private int gpsIntervall = 5000;
-	
+	/**
+	 * is tracking enabled
+	 */
 	private boolean isTracking = false;
-	
+	/**
+	 * count the gps-updates
+	 */
 	private int countGPSUpdates = 0;
-	
+	/**
+	 * get the location-updates from the gps-unit or from the emulation-file
+	 */
 	private Boolean emulationMode = false;
+	/**
+	 * class for reading a gpx-file and emulate it
+	 */
 	private TrackEmulation trackEmulation = null;
 
 	/******************* Handler *************************/
-	
+	/**
+	 * called, if the emulation has stopped
+	 */
 	protected Handler onEmulationEndHandler = new Handler(Looper.getMainLooper()) {
 		@Override
 		public void handleMessage(Message msg) {	
 			Log.i(TAG, "Emulation terminated");
-			//stop();
-			/*if(testCurrentIteration < 10){
-				trackEmulation = null;
-				initGPS();
-				start();
-			}*/
 		}
 	};
 
@@ -60,6 +83,9 @@ public class EET_simple implements LocationProxy, LocationListener {
 		initGPS();
 	}
 
+	/**
+	 * start tracking or emulation
+	 */
 	public void start() {
 		if(emulationMode) Toast.makeText(ctx.getApplicationContext(), "Tracking start" + " (Emulation, " + trackEmulation.countPoints() + " Points)", Toast.LENGTH_SHORT).show();
 		else Toast.makeText(ctx.getApplicationContext(), "Tracking start", Toast.LENGTH_SHORT).show();
@@ -70,6 +96,9 @@ public class EET_simple implements LocationProxy, LocationListener {
 		isTracking = true;
 	}
 
+	/**
+	 * stop tracking or emulation
+	 */
 	public void stop() {
 		disableGPS();
 		
@@ -81,10 +110,16 @@ public class EET_simple implements LocationProxy, LocationListener {
 		isTracking = false;
 	}
 
+	/**
+	 * returns the last received location
+	 */
 	public Location getLastLocation() {
 		return lastLoc;
 	}
 
+	/**
+	 * register a LocationListener, there can only be one registered
+	 */
 	public void registerLocationListener(LocationListener locationListener) {
 		this.externListener = locationListener;
 	}

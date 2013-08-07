@@ -29,39 +29,58 @@ import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
 
 import de.tudresden.inf.rn.mobilis.eet.GPXTrack;
-import de.tudresden.inf.rn.mobilis.eet.LocationProxy;
+import de.tudresden.inf.rn.mobilis.eet.ILocationProxy;
 import de.tudresden.inf.rn.mobilis.friendfinder.clientstub.ClientData;
 import de.tudresden.inf.rn.mobilis.friendfinder.service.ServiceConnector;
 
+/**
+ * MapActivity with GoogleMaps-Fragment
+ * 
+ */
 public class MapActivity extends FragmentActivity implements
 		OnMapClickListener, OnMapLongClickListener, OnCameraChangeListener,
 		OnMarkerClickListener, OnInfoWindowClickListener {
 
 	public static final String TAG = "MapActivity";
+
+	/**
+	 * show the status of the tracking-class in a gray-box at the bottom of the
+	 * map
+	 */
 	private final boolean showEETStatus = true;
 
 	private GoogleMap mMap;
 	private Toast toast;
-	
+
 	private TextView eet_status;
 
+	/**
+	 * save the markers for the chat-members
+	 */
 	private HashMap<String, Marker> markers = new HashMap<String, Marker>();
 
 	private ServiceConnector mServiceConnector;
 
 	/********************* Handler **********************/
 
+	/**
+	 * called, if the BackgroundService bound successfully
+	 */
 	private Handler onServiceBoundHandler = new Handler() {
 		public void handleMessage(Message msg) {
 			mServiceConnector.getService().registerMUCListener(
 					MapActivity.this, onNewMUCMessageHandler);
-			
+
 			setUpMapIfNeeded();
 			updateMarkerList();
 		}
 
 	};
 
+	/**
+	 * called, if a new muc-message was received
+	 * update the marker-list
+	 */
 	private Handler onNewMUCMessageHandler = new Handler() {
 		public void handleMessage(Message msg) {
 			// Display a toast on top of the screen
@@ -82,7 +101,7 @@ public class MapActivity extends FragmentActivity implements
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_map);
-		
+
 		eet_status = (TextView) findViewById(R.id.map_eet_status);
 
 		toast = Toast.makeText(this, "null", Toast.LENGTH_SHORT);
@@ -98,6 +117,9 @@ public class MapActivity extends FragmentActivity implements
 
 	/*************** class-specific functions *******************/
 
+	/**
+	 * update the markers and the prediction-status
+	 */
 	public void updateMarkerList() {
 
 		if (mMap != null) {
@@ -127,22 +149,26 @@ public class MapActivity extends FragmentActivity implements
 				markers.put(cd.getJid(), m);
 			}
 		}
-		
-		if(this.showEETStatus) updateEETStatus();
+
+		if (this.showEETStatus)
+			updateEETStatus();
 	}
-	
-	private void updateEETStatus(){
-		LocationProxy eet = mServiceConnector.getService().getLocationProxy();
+
+	/**
+	 * update prediction-status and the polyline for the prediction-track
+	 */
+	private void updateEETStatus() {
+		ILocationProxy eet = mServiceConnector.getService().getLocationProxy();
 		eet_status.setText(eet.getEETStatus());
-		
-		if(eet.getPredStatus() == LocationProxy.PRED_ON){
-			PolylineOptions options = new PolylineOptions()
-					.width(5).color(Color.RED);
-			for(GPXTrack.Trkpt pt : eet.getPredTempTrack().getTrackPoints()){
+
+		if (eet.getPredStatus() == ILocationProxy.PRED_ON) {
+			PolylineOptions options = new PolylineOptions().width(5).color(
+					Color.RED);
+			for (GPXTrack.Trkpt pt : eet.getPredTempTrack().getTrackPoints()) {
 				options.add(new LatLng(pt.lat, pt.lon));
 			}
 			mMap.addPolyline(options);
-		}	
+		}
 	}
 
 	/***************** map functions *********************/
@@ -163,6 +189,7 @@ public class MapActivity extends FragmentActivity implements
 		}
 	}
 
+	/** set up map */
 	private void setUpMap() {
 		mMap.setMyLocationEnabled(true);
 		mMap.setOnMapClickListener(this);
@@ -171,18 +198,19 @@ public class MapActivity extends FragmentActivity implements
 
 		mMap.setOnMarkerClickListener(this);
 		mMap.setOnInfoWindowClickListener(this);
-		
-		Location lastLoc = mServiceConnector.getService().getLocationProxy().getLastLocation();
-		if(lastLoc != null)
-			mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(lastLoc.getLatitude(), lastLoc.getLongitude()), 15));
+
+		Location lastLoc = mServiceConnector.getService().getLocationProxy()
+				.getLastLocation();
+		if (lastLoc != null)
+			mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(
+					lastLoc.getLatitude(), lastLoc.getLongitude()), 15));
 		else
-			mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(51.0456, 13.7366), 12));
+			mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(
+					51.0456, 13.7366), 12));
 	}
 
 	@Override
 	public void onMapClick(LatLng point) {
-		//toast.setText("tapped, point=" + point);
-		//toast.show();
 	}
 
 	@Override
@@ -195,20 +223,10 @@ public class MapActivity extends FragmentActivity implements
 
 	@Override
 	public void onCameraChange(final CameraPosition position) {
-		//toast.setText("camera, " + position.toString());
-		//toast.show();
 	}
 
 	@Override
 	public boolean onMarkerClick(final Marker marker) {
-		// registerForContextMenu(mMapView);
-
-		// We return false to indicate that we have not consumed the event and
-		// that we wish
-		// for the default behavior to occur (which is for the camera to move
-		// such that the
-		// marker is centered and for the marker's info window to open, if it
-		// has one).
 		return false;
 	}
 

@@ -21,11 +21,22 @@ import android.location.Location;
 import android.os.Environment;
 import android.util.Log;
 
+/**
+ * represents a gpx-track with name, time and a list of trackpoints
+ * export this data to gpx-file or xml-string to send it over xmpp
+ */
 public class GPXTrack {
+	/**
+	 * file for saving
+	 */
 	protected File mGpxFile;
 	protected Boolean emulationMode;
 
 	private static final String TAG = "GPXTrack";
+	
+	/**
+	 * min distance between two points
+	 */
 	private final double MAX_DISTANCE = 25;
 
 	// metadata
@@ -70,6 +81,16 @@ public class GPXTrack {
 
 	}
 
+	/**
+	 * ad a new trackpoint to the list
+	 * @param lat
+	 * @param lon
+	 * @param activity
+	 * @param speed
+	 * @param time
+	 * @param ele
+	 * @param acc
+	 */
 	public void addTrackPoint(double lat, double lon, String activity,
 			float speed, long time, double ele, float acc) {
 		trkpt.add(new Trkpt(lat, lon, activity, speed, time, ele, acc));
@@ -82,6 +103,11 @@ public class GPXTrack {
 
 	public String toXML(){ return this.toXML(true); }
 	
+	/**
+	 * export the data to a xml-string
+	 * @param forIQ if true, the gpx-headers will be removed
+	 * @return
+	 */
 	public String toXML(Boolean forIQ) {
 		final String START = "<";
 		final String END = ">";
@@ -115,6 +141,10 @@ public class GPXTrack {
 		return sb.toString();
 	}
 
+	/**
+	 * clear current data and parse the data from a given xml-string
+	 * @param gpx
+	 */
 	public void fromXML(String gpx){
 		try {
 			XmlPullParser xpp;
@@ -173,6 +203,9 @@ public class GPXTrack {
 		} while (!done);
 	}
 
+	/**
+	 * save the data to a file in gpx-format
+	 */
 	public void saveFile() {
 		if (emulationMode)
 			return;
@@ -191,6 +224,12 @@ public class GPXTrack {
 		}
 	}
 	
+	/**
+	 * get the track-position for the given coordinates or -1, if no point is in the range of MAX_DISTANCE to the coordinates
+	 * @param lat
+	 * @param lon
+	 * @return
+	 */
 	public int getTrackPosition(double lat, double lon){
 		double bestDistance = Double.MAX_VALUE;
 		int bestPosition = -1;
@@ -211,6 +250,11 @@ public class GPXTrack {
 			return -1;
 	}
 	
+	/**
+	 * cut the track at the given index and delete all trackpoints bevor this
+	 * @param index
+	 * @param forward if false, reverse the track an get the points befor the index
+	 */
 	public void cutTrack(int index, boolean forward){
 		int start, end;
 		if(forward){
@@ -227,10 +271,18 @@ public class GPXTrack {
 	
 	public ArrayList<Trkpt> getTrackPoints(){ return this.trkpt; }
 	
+	/**
+	 * required from XMPPBean-Objects to parse this class automatically
+	 * @return
+	 */
 	public String getChildElement(){ return GPXTrack.CHILD_ELEMENT; }
 
 	/*************** static methods *************************/
-
+	/**
+	 * get the file with the given name and create the standard directories if nessecary
+	 * @param name
+	 * @return the file
+	 */
 	public static File getGPXFile(String name) {
 		File sdFolder = new File(Environment.getExternalStorageDirectory()
 				.getAbsoluteFile(), "friendfinder");
@@ -246,6 +298,10 @@ public class GPXTrack {
 
 	/************** inner classes **********************/
 
+	/**
+	 * represents a trackpoint
+	 * implements all methods to export the trackpoint-data to xml
+	 */
 	public class Trkpt {
 		public double lat;
 		public double lon;

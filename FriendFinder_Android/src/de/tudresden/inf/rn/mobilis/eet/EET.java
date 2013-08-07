@@ -26,53 +26,150 @@ import de.tudresden.inf.rn.mobilis.friendfinder.clientstub.ClientLocation;
 import de.tudresden.inf.rn.mobilis.friendfinder.clientstub.IXMPPCallback;
 import de.tudresden.inf.rn.mobilis.friendfinder.clientstub.IsTrackAvailableResponse;
 
-public class EET implements LocationProxy, LocationListener,
+/**
+ * class for energy-efficient tracking implements a prediction-algorithm and an
+ * activity-recognition
+ * 
+ */
+public class EET implements ILocationProxy, LocationListener,
 		ConnectionCallbacks, OnConnectionFailedListener {
 	private static final String TAG = "EET";
 
+	/**
+	 * proxy, which has the method to send the isTrackAvailable-message to the
+	 * service
+	 */
 	private IEETProxy mobilisProxy;
+	/**
+	 * jid of the service
+	 */
 	private String serviceJID;
 
+	/**
+	 * Android LocactionManager
+	 */
 	private LocationManager locMan;
+	/**
+	 * Context to get the LocationManager
+	 */
 	private Context ctx;
+	/**
+	 * last received location
+	 */
 	private Location lastLoc;
+	/**
+	 * extern listener, which will be called, if a new position detected
+	 */
 	private LocationListener externListener;
 
+	/**
+	 * PendingIntent for activity-recognition
+	 */
 	private PendingIntent mActivityRecognitionPendingIntent;
+	/**
+	 * the regognition-client
+	 */
 	private ActivityRecognitionClient mActivityRecognitionClient;
+	/**
+	 * is activity-recognition connected for enabling/disabling
+	 */
 	private boolean arInProgress = false;
+	/**
+	 * is activity-recognition enabled
+	 */
 	private boolean arEnabled = false;
+	/**
+	 * last received activity
+	 */
 	private String lastActivity = "unknown";
+	/**
+	 * convidence for the last activity
+	 */
 	private int lastActivityConvidence = 0;
-	private LocationListener curGPSLocListener = this;
 
+	/**
+	 * active intern locationlistener (gps or prediction)
+	 */
+	private LocationListener curGPSLocListener = this;
+	/**
+	 * is tracking enabled
+	 */
 	private Boolean isTracking = false;
+	/**
+	 * the gpx-track to save the received points (not in emulation-mode)
+	 */
 	private GPXTrack mGPX;
+	/**
+	 * gps-interval for disabled prediction
+	 */
 	private int gpsIntervall = 5000;
 
 	public final int PRED_OFF = 0;
 	public final int PRED_CHECK = 1;
 	public final int PRED_ON = 2;
 
+	/**
+	 * gps-interval for enabled prediction
+	 */
 	private int predGpsIntervall = 30000;
+	/**
+	 * current database-id of the recorded or emulated track
+	 */
 	private int predCurrentTrackId;
+	/**
+	 * predicted track
+	 */
 	private GPXTrack predTempTrack;
+	/**
+	 * emulation-class for prediction
+	 */
 	private TrackEmulation predTrackEmulation;
+	/**
+	 * current position in prediction-track
+	 */
 	private int predCurrentPoint;
+	/**
+	 * status of prediction (off/check/on)
+	 */
 	private int predStatus;
+	/**
+	 * status-string for debug-outpug
+	 */
 	private String predLastServerStatus = "";
+	/**
+	 * status-string for debug-outpug
+	 */
 	private String predLastClientStatus = "";
 
+	/**
+	 * messured time in prediction-mode
+	 */
 	private long timeInPrediction = 0;
 	private long tempTimeInPrediction = 0;
+	/**
+	 * messured time in gps-mode
+	 */
 	private long timeInGPS = 0;
 	private long tempTimeInGPS = 0;
+	/**
+	 * count the total gps-updates
+	 */
 	private int countGPSUpdates = 0;
 
+	/**
+	 * real or emulation mode
+	 */
 	private Boolean emulationMode = false;
+	/**
+	 * emulation-class
+	 */
 	private TrackEmulation trackEmulation = null;
 
 	/******************* Handler *************************/
+	/**
+	 * called, if the location has changed (gps or prediction) include the
+	 * prediction-check algorithm, whether a received track is correct
+	 */
 	private Handler onLocationChangedHandler = new Handler(
 			Looper.getMainLooper()) {
 		@Override
@@ -137,6 +234,9 @@ public class EET implements LocationProxy, LocationListener,
 		}
 	};
 
+	/**
+	 * called, if a activity was detected
+	 */
 	protected Handler onActivityResultHandler = new Handler(
 			Looper.getMainLooper()) {
 		@Override
@@ -151,6 +251,9 @@ public class EET implements LocationProxy, LocationListener,
 		}
 	};
 
+	/**
+	 * called, if the prediction was at the end of the track
+	 */
 	protected Handler onPredictionEndHandler = new Handler(
 			Looper.getMainLooper()) {
 		@Override
@@ -160,6 +263,9 @@ public class EET implements LocationProxy, LocationListener,
 		}
 	};
 
+	/**
+	 * called, when the emulation terminated
+	 */
 	protected Handler onEmulationEndHandler = new Handler(
 			Looper.getMainLooper()) {
 		@Override
@@ -167,6 +273,10 @@ public class EET implements LocationProxy, LocationListener,
 		}
 	};
 
+	/**
+	 * called, if a IsTrackAvailableResponse-message was received set the
+	 * prediction-status to check
+	 */
 	protected IXMPPCallback<IsTrackAvailableResponse> isTrackAvailableResponse = new IXMPPCallback<IsTrackAvailableResponse>() {
 		@Override
 		public void invoke(IsTrackAvailableResponse xmppBean) {
@@ -214,6 +324,9 @@ public class EET implements LocationProxy, LocationListener,
 		initGPS();
 	}
 
+	/**
+	 * start tracking or emulation
+	 */
 	public void start() {
 		if (emulationMode)
 			Toast.makeText(
@@ -232,6 +345,9 @@ public class EET implements LocationProxy, LocationListener,
 		isTracking = true;
 	}
 
+	/**
+	 * stop tracking or emulation
+	 */
 	public void stop() {
 		disablePrediction();
 		disableGPS();
@@ -249,16 +365,26 @@ public class EET implements LocationProxy, LocationListener,
 				+ (timeInPrediction / 1000.0) + "s)");
 	}
 
+	/**
+	 * get last received location
+	 */
 	public Location getLastLocation() {
 		return lastLoc;
 	}
 
+	/**
+	 * register an extern location listener there can be only one listener
+	 * registered
+	 */
 	public void registerLocationListener(LocationListener locationListener) {
 		this.externListener = locationListener;
 	}
 
 	/************* gps *****************/
 
+	/**
+	 * the activity-recognition, gps or emulation was initialized
+	 */
 	protected void initGPS() {
 		locMan = (LocationManager) ctx
 				.getSystemService(Context.LOCATION_SERVICE);
@@ -284,6 +410,10 @@ public class EET implements LocationProxy, LocationListener,
 		}
 	}
 
+	/**
+	 * set the current listener to gps, set normal gps-interval, activates
+	 * activity-recognition
+	 */
 	protected void enableGPS() {
 		Log.i(TAG, "enableGPS");
 		tempTimeInGPS = System.currentTimeMillis();
@@ -310,6 +440,10 @@ public class EET implements LocationProxy, LocationListener,
 		}
 	}
 
+	/**
+	 * set the current listener to predition, set reduced
+	 * prediction-gps-interval, deactivates activity-recognition
+	 */
 	protected void disableGPSForPrediction() {
 		LocationListener oldLocLis = curGPSLocListener;
 		curGPSLocListener = secondLocListener;
@@ -337,6 +471,9 @@ public class EET implements LocationProxy, LocationListener,
 		}
 	}
 
+	/**
+	 * remove LocationListener, deactivates activity-recognition
+	 */
 	protected void disableGPS() {
 		if (tempTimeInGPS > 0)
 			timeInGPS += (System.currentTimeMillis() - tempTimeInGPS);
@@ -359,7 +496,9 @@ public class EET implements LocationProxy, LocationListener,
 	}
 
 	/************ prediction ******************/
-
+	/**
+	 * initialize prediction-variables
+	 */
 	protected void initPrediction() {
 		if (predStatus == PRED_ON)
 			disablePrediction();
@@ -370,6 +509,11 @@ public class EET implements LocationProxy, LocationListener,
 		predCurrentPoint = -1;
 	}
 
+	/**
+	 * enable prediction over the given track, start track-emulation
+	 * 
+	 * @param gpx
+	 */
 	protected void enablePrediction(GPXTrack gpx) {
 		Log.i(TAG, "enablePrediction");
 		tempTimeInPrediction = System.currentTimeMillis();
@@ -384,6 +528,9 @@ public class EET implements LocationProxy, LocationListener,
 		disableGPSForPrediction();
 	}
 
+	/**
+	 * stop track-emulation, enable gps
+	 */
 	protected void disablePrediction() {
 		if (tempTimeInPrediction > 0)
 			timeInPrediction += (System.currentTimeMillis() - tempTimeInPrediction);
@@ -401,6 +548,9 @@ public class EET implements LocationProxy, LocationListener,
 
 	/*************** communication *****************/
 
+	/**
+	 * send IsTrackAvailableRequest-Message to the service
+	 */
 	public void sendIsTrackAvailable() {
 		Location loc;
 		if (lastLoc != null)
@@ -416,6 +566,10 @@ public class EET implements LocationProxy, LocationListener,
 				isTrackAvailableResponse);
 	}
 
+	/**
+	 * send a special IsTrackAvailableRequest-Message to rate the current Track
+	 * in the Database
+	 */
 	public void sendRateTrack() {
 		ClientLocation cl = new ClientLocation(-Double.MAX_VALUE,
 				-Double.MAX_VALUE, 0, "", 0, 0);
@@ -431,15 +585,16 @@ public class EET implements LocationProxy, LocationListener,
 
 	/**************** Listener **********************/
 
+	/**
+	 * LocationListener for GPS in Prediction-Mode check, whether the prediction
+	 * is correct
+	 */
 	private LocationListener secondLocListener = new LocationListener() {
 
 		@Override
 		public void onLocationChanged(Location arg0) {
 			Log.i(TAG, "secondLocation received N" + arg0.getLatitude() + " E"
 					+ arg0.getLongitude());
-			// Toast.makeText(ctx.getApplicationContext(),
-			// "secondLocListener:onLocationChanged",
-			// Toast.LENGTH_SHORT).show();
 
 			if (predStatus == PRED_ON) {
 				int pos = predTempTrack.getTrackPosition(arg0.getLatitude(),
@@ -463,7 +618,7 @@ public class EET implements LocationProxy, LocationListener,
 					Log.i(TAG, predLastClientStatus);
 				}
 			} else {
-				// if(!emulationMode) countGPSUpdates++;
+				if(!emulationMode) countGPSUpdates++;
 			}
 		}
 
@@ -481,6 +636,10 @@ public class EET implements LocationProxy, LocationListener,
 
 	};
 
+	/**
+	 * this LocationListener get the gps-updates, when the app is in emulation-mode
+	 * read the battery-level and count the countGPSUpdates-variable for energy-tests
+	 */
 	private LocationListener testLocListener = new LocationListener() {
 		@Override
 		public void onLocationChanged(Location arg0) {
@@ -505,6 +664,10 @@ public class EET implements LocationProxy, LocationListener,
 		}
 	};
 
+	/**
+	 * intern, first LocationListener for prediction or GPS
+	 * send the Position to the onLocationChangedHandler and the externListener
+	 */
 	@Override
 	public void onLocationChanged(Location arg0) {
 		if (externListener != null)
@@ -546,9 +709,12 @@ public class EET implements LocationProxy, LocationListener,
 	public void onConnectionFailed(ConnectionResult connectionResult) {
 		Log.w(TAG, "OnConnectionFailedListener.onConnectionFailed(), Code: "
 				+ connectionResult.getErrorCode());
-
 	}
 
+	/**
+	 * called, if the connection to the ActivityRecognitionClient was established
+	 * add or remove the activity-updates
+	 */
 	@Override
 	public void onConnected(Bundle arg0) {
 		Log.v(TAG, "ConnectionCallbacks.onConnected(), act-recog "
@@ -560,7 +726,7 @@ public class EET implements LocationProxy, LocationListener,
 					.removeActivityUpdates(mActivityRecognitionPendingIntent);
 		} else {
 			arEnabled = true;
-			mActivityRecognitionClient.requestActivityUpdates(3000,
+			mActivityRecognitionClient.requestActivityUpdates(this.gpsIntervall,
 					mActivityRecognitionPendingIntent);
 		}
 
@@ -604,6 +770,10 @@ public class EET implements LocationProxy, LocationListener,
 		return status;
 	}
 
+	/**
+	 * preparation for the dynamic gps-interval, based on the recognized activity
+	 * @return the suggested gps-interval for the last activity
+	 */
 	private int getGPSIntervall() {
 		if (this.lastActivity == "on_bicycle")
 			return 5000;
@@ -621,7 +791,11 @@ public class EET implements LocationProxy, LocationListener,
 			return 5000;
 	}
 
-	public float getBatteryLevel() {
+	/**
+	 * get the current battery-level
+	 * @return
+	 */
+	private float getBatteryLevel() {
 		Intent batteryIntent = this.ctx.registerReceiver(null,
 				new IntentFilter(Intent.ACTION_BATTERY_CHANGED));
 		int level = batteryIntent.getIntExtra(BatteryManager.EXTRA_LEVEL, -1);

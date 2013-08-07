@@ -19,6 +19,10 @@ import android.widget.Toast;
 import de.tudresden.inf.rn.mobilis.friendfinder.clientstub.ClientData;
 import de.tudresden.inf.rn.mobilis.friendfinder.service.ServiceConnector;
 
+/**
+ * ClientDataActivity for display a contact-list
+ *
+ */
 public class ClientDataActivity extends Activity {
 
 	public static final String TAG = "ClientDataActivity";
@@ -29,7 +33,9 @@ public class ClientDataActivity extends Activity {
 	private ServiceConnector mServiceConnector;
 
 	/********************* Handler **********************/
-
+	/**
+	 * called, if the service is bound successfully
+	 */
 	private Handler onServiceBoundHandler = new Handler() {
 		public void handleMessage(Message msg) {
 
@@ -39,6 +45,10 @@ public class ClientDataActivity extends Activity {
 		}
 	};
 
+	/**
+	 * called, if a new muc-message was received 
+	 * update the clientData-list
+	 */
 	private Handler onNewMUCMessageHandler = new Handler() {
 		public void handleMessage(Message msg) {
 			// Display a toast on top of the screen
@@ -82,13 +92,20 @@ public class ClientDataActivity extends Activity {
 
 	/*********************** class-spezific functions **********************/
 
+	/**
+	 * initialize the clientdata-list
+	 */
 	public void initList() {
 		adapter = new ClientDataListAdapter(mServiceConnector
 				.getService().getClientDataList(), this);
 		list.setAdapter(adapter);
 	}
 
-	public class ClientDataListAdapter extends BaseAdapter {
+	/**
+	 * custom BaseAdapter for displaying the ClientData of the members with their color
+	 *
+	 */
+	protected class ClientDataListAdapter extends BaseAdapter {
 
 		private HashMap<String, ClientData> mData = new HashMap<String, ClientData>();
 		private String[] mKeys;

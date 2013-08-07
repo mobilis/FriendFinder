@@ -9,6 +9,10 @@ import android.os.Message;
 import com.google.android.gms.location.ActivityRecognitionResult;
 import com.google.android.gms.location.DetectedActivity;
 
+/**
+ * class to receive activity-status
+ * for additional informationen read the the Android-Documentation
+ */
 public class ActivityRecognitionIntentService extends IntentService {
 
 	private static final String TAG = "ActivityRecognitionIntentService";
@@ -34,8 +38,6 @@ public class ActivityRecognitionIntentService extends IntentService {
 			int confidence = mostProbableActivity.getConfidence();
 			int activityType = mostProbableActivity.getType();
 			String activityName = getNameFromType(activityType);
-			
-			// Log.v(TAG, activityName + " (" + confidence + ")");
 
 			if (ActivityRecognitionIntentService.onActivitiyResultHandler != null) {
 				Bundle resultBundle = new Bundle();

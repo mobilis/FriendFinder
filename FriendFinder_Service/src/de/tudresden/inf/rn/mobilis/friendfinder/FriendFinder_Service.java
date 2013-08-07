@@ -36,15 +36,27 @@ import de.tudresden.inf.rn.mobilis.xmpp.server.BeanHelper;
 import de.tudresden.inf.rn.mobilis.xmpp.server.BeanIQAdapter;
 import de.tudresden.inf.rn.mobilis.xmpp.server.BeanProviderAdapter;
 
+/**
+ * the entry-class of this service
+ *
+ */
 public class FriendFinder_Service extends MobilisService {
 
 	private final static Logger LOG = Logger.getLogger(FriendFinder_Service.class
 			.getCanonicalName());
 	
+	/**
+	 * proxy-class for sending iqs
+	 */
 	private FriendFinderProxy _proxy;
+	/**
+	 * waiting callbacks
+	 */
 	private Map<String, IXMPPCallback<? extends XMPPBean>> _waitingCallbacks;
 
-	private Map<String, ClientData> clients;
+	/**
+	 * save all joined clients
+	 */
 	private HashMap<String, ClientData> clientJID;
 
 	private MultiUserChat muc;
@@ -53,18 +65,25 @@ public class FriendFinder_Service extends MobilisService {
 	private long serviceID = 1;
 	private String serviceName = "FriendFinder";
 	private String mucJID = "test@" + mucDomain;
+	/**
+	 * available colors for the map-marker
+	 */
 	private String[] colors = { "#ff0000", "#00ff00", "#0000ff", "#ffff00",
 			"#ff00ff", "#00ffff" };
+	/**
+	 * last used color
+	 */
 	private int lastColor = 0;
 	
+	/**
+	 * eet-service with the tracking-algorithm
+	 */
 	private EET_Service eet;
 
 	public FriendFinder_Service() {
 		_proxy = new FriendFinderProxy(_FriendFinderServiceOutgoingStub);
 		_waitingCallbacks = new HashMap<String, IXMPPCallback<? extends XMPPBean>>();
 
-		clients = Collections
-				.synchronizedMap(new HashMap<String, ClientData>());
 		clientJID = new HashMap<String, ClientData>();
 		
 		eet = new EET_Service();
@@ -109,7 +128,10 @@ public class FriendFinder_Service extends MobilisService {
 	}
 
 	/*************** class-specific functions **************************/
-
+	/**
+	 * create a new muc
+	 * @throws XMPPException
+	 */
 	private void createMUC() throws XMPPException {
 		muc = new MultiUserChat(getAgent().getConnection(), mucJID);
 
@@ -135,12 +157,18 @@ public class FriendFinder_Service extends MobilisService {
 
 	}
 
+	/**
+	 * generate a random password for every muc
+	 * @return
+	 */
 	private String generatePwd() {
-		return "test!Pwd";
+		return "test!Pwd" + System.currentTimeMillis();
 	}
 
 	/*************** external classes *************************/
-
+	/**
+	 * process the outgoing xmpp-beans
+	 */
 	private IFriendFinderOutgoing _FriendFinderServiceOutgoingStub = new IFriendFinderOutgoing() {
 
 		@Override
@@ -157,11 +185,13 @@ public class FriendFinder_Service extends MobilisService {
 
 	};
 
+	/**
+	 * process the incoming xmpp-beans
+	 */
 	private IFriendFinderIncoming _FriendFinderIncomingStub = new IFriendFinderIncoming() {
 
 		@Override
 		public XMPPBean onJoinService(JoinServiceRequest in) {
-
 			LOG.info(in.getFrom() + " has joined service");
 
 			ClientData cd = new ClientData();
@@ -173,11 +203,7 @@ public class FriendFinder_Service extends MobilisService {
 			out.setMucJID(mucJID);
 			out.setMucPwd(mucPwd);
 			out.setColor(cd.getColor());
-
-			// LOG.info("onJoinService2");
-
 			return out;
-
 		}
 
 		@Override
@@ -187,20 +213,24 @@ public class FriendFinder_Service extends MobilisService {
 			if (clientJID.containsKey(in.getFrom()))
 				clientJID.remove(in.getFrom());
 
-			// todo
 			LeaveServiceResponse out = new LeaveServiceResponse();
 			out.setId(in.getId());
-
 			return out;
 		}
 
+		/**
+		 * do nothing, this method is implemented in the EET_Service
+		 */
 		@Override
 		public XMPPBean onIsTrackAvailable(IsTrackAvailableRequest in) {
-			// TODO Auto-generated method stub
 			return null;
 		}
 	};
 
+	/**
+	 * IQListener for processing the incoming XMPPBeans
+	 *
+	 */
 	private class IQListener implements PacketListener {
 
 		@Override
@@ -261,9 +291,6 @@ public class FriendFinder_Service extends MobilisService {
 					}
 				}
 			}
-
 		}
-
 	};
-
 }

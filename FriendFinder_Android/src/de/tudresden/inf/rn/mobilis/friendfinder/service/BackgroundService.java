@@ -20,7 +20,7 @@ import android.os.RemoteException;
 import android.util.Log;
 import de.tudresden.inf.rn.mobilis.eet.EET;
 import de.tudresden.inf.rn.mobilis.eet.IEETProxy;
-import de.tudresden.inf.rn.mobilis.eet.LocationProxy;
+import de.tudresden.inf.rn.mobilis.eet.ILocationProxy;
 import de.tudresden.inf.rn.mobilis.friendfinder.clientstub.ClientData;
 import de.tudresden.inf.rn.mobilis.friendfinder.clientstub.ClientLocation;
 import de.tudresden.inf.rn.mobilis.friendfinder.clientstub.MUCMessage;
@@ -28,23 +28,48 @@ import de.tudresden.inf.rn.mobilis.friendfinder.proxy.IQProxy;
 import de.tudresden.inf.rn.mobilis.friendfinder.proxy.MXAProxy;
 import de.tudresden.inf.rn.mobilis.mxa.parcelable.XMPPMessage;
 
+/**
+ * The BackgroundService holds the classes for communication and tracking
+ * there are also some methods for using the xmpp-muc and its data-messages
+ * was bound over the ServiceConnector
+ */
 public class BackgroundService extends Service implements LocationListener {
 
 	private static final String TAG = "BackgroundService";
 
 	private MXAProxy mMXAProxy;
 	private IQProxy mIQProxy;
+	/**
+	 * registered class, which is called, if there is a xmpp-response and no registered callbackclass in the IQProxy
+	 */
 	private ICallback callbackClass;
-
+	/**
+	 * the JID of the MUC
+	 */
 	private String mucJID;
+	/**
+	 * password of the MUC
+	 */
 	private String mucPwd;
+	/**
+	 * JID of the joined service-instance
+	 */
 	private String serviceJID;
-
-	private LocationProxy locationProxy;
-
+	/**
+	 * tracking-class
+	 */
+	private ILocationProxy locationProxy;
+	/**
+	 * own data, like name, color, position, ...
+	 */
 	private ClientData clientData;
+	/**
+	 * gathered informations about the other MUC-members
+	 */
 	private HashMap<String, ClientData> clientDataList;
-
+	/**
+	 * namespace of the service
+	 */
 	private final String ServiceNamespace = "http://mobilis.inf.tu-dresden.de#services/FriendFinder";
 
 	/*************** Handler *****************/
@@ -55,7 +80,9 @@ public class BackgroundService extends Service implements LocationListener {
 			return BackgroundService.this;
 		}
 	}
-	
+	/**
+	 * called, if the location has changed
+	 */
 	private Handler onLocationChangedHandler = new Handler(){
 		@Override
 		public void handleMessage(Message msg){
@@ -111,7 +138,9 @@ public class BackgroundService extends Service implements LocationListener {
 	}
 
 	/***************** muc-facade ********************/
-
+	/**
+	 * connect to the muc with the saved jid and password
+	 */
 	public void connectToMUC() {
 		if (getMXAProxy().isConnected()) {
 			try {
@@ -121,11 +150,16 @@ public class BackgroundService extends Service implements LocationListener {
 			}
 		}
 	}
-
+	/**
+	 * 
+	 * @return true, if muc is successful connected
+	 */
 	public Boolean isMUCConnected() {
 		return getMXAProxy().isConnected() && getMXAProxy().isMUCConnected();
 	}
-
+	/**
+	 * unconnect muc
+	 */
 	public void unconnectMUC() {
 		try {
 			if(getMXAProxy().isConnected() && getMXAProxy().isMUCConnected()) getMXAProxy().getMultiUserChatService().leaveRoom(mucJID);
@@ -133,7 +167,10 @@ public class BackgroundService extends Service implements LocationListener {
 			Log.e(TAG, "unconnectMUC()", e);
 		}
 	}
-
+	/**
+	 * send a data-message to the muc
+	 * @param mucMsg
+	 */
 	public void sendMUCMessage(MUCMessage mucMsg) {
 		if (getMXAProxy().isConnected()) {
 			//mucMsg.getClientData().setTime(System.currentTimeMillis());
@@ -149,7 +186,11 @@ public class BackgroundService extends Service implements LocationListener {
 			}
 		}
 	}
-
+	/**
+	 * register a listener, which is called, if there is a new message received from the muc
+	 * @param activity current activity
+	 * @param handler
+	 */
 	public void registerMUCListener(Activity activity, Handler handler) {
 		if (getMXAProxy().isConnected()) {
 			getMXAProxy().registerIncomingMessageObserver(activity, handler, mucJID);
@@ -158,7 +199,10 @@ public class BackgroundService extends Service implements LocationListener {
 	}
 
 	/***************** class-specific functions *****************/
-	
+	/**
+	 * update the clientDataList with the given instance of ClientData
+	 * @param data
+	 */
 	public void updateClientDataList(ClientData data) {
 		// if (clientDataList.get(data.getJid()) == null
 		//		|| clientDataList.get(data.getJid()).getTime() < data.getTime())
@@ -167,10 +211,11 @@ public class BackgroundService extends Service implements LocationListener {
 
 	/**
 	 * parse XML MUCMessage in ClientData and text
+	 * save the received ClientData in the clientDataList
 	 * 
 	 * @param body
 	 *            xml message
-	 * @return the text-field
+	 * @return the text-message
 	 */
 	public String parseXMLMUCMessage(String body, Boolean updateClientDataList) {
 		String text = "";
@@ -243,7 +288,7 @@ public class BackgroundService extends Service implements LocationListener {
 		return clientDataList;
 	}
 
-	public LocationProxy getLocationProxy() {
+	public ILocationProxy getLocationProxy() {
 		return locationProxy;
 	}
 
@@ -272,23 +317,11 @@ public class BackgroundService extends Service implements LocationListener {
 	}
 
 	@Override
-	public void onProviderDisabled(String arg0) {
-		// TODO Auto-generated method stub
-
-	}
+	public void onProviderDisabled(String arg0) { }
 
 	@Override
-	public void onProviderEnabled(String arg0) {
-		// TODO Auto-generated method stub
-
-	}
+	public void onProviderEnabled(String arg0) { }
 
 	@Override
-	public void onStatusChanged(String arg0, int arg1, Bundle arg2) {
-		// TODO Auto-generated method stub
-
-	}
-
-
-
+	public void onStatusChanged(String arg0, int arg1, Bundle arg2) { }
 }

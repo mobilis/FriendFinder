@@ -16,9 +16,17 @@ import android.os.Message;
 import android.util.Log;
 import de.tudresden.inf.rn.mobilis.eet.GPXTrack.Trkpt;
 
+/**
+ * the class read a gpx-track and emulate this track with the saved trackpoint-times
+ * for every point there will be called a LocationListener and a handler vor the activity-update, if registered.
+ * also used for the track-prediction in the eet-algorithm
+ */
 public class TrackEmulation {
 	protected static final String TAG = "TrackEmulation";
 
+	/**
+	 * thread, which emulates the gpx-track
+	 */
 	protected TrackEmulationThread tet = null;
 
 	public TrackEmulation(File gpxFile, LocationListener mLocationListener,
@@ -45,7 +53,12 @@ public class TrackEmulation {
 		tet = new TrackEmulationThread(gpx, mLocationListener,
 				mActivityResultHandler, mEmulationEndHandler, 1);
 	}
-	
+	/**
+	 * set new handlers
+	 * @param mLocationListener
+	 * @param onActivityResultHandler
+	 * @param mEmulationEndHandler
+	 */
 	public void setHandlers(LocationListener mLocationListener,
 			Handler onActivityResultHandler, 
 			Handler mEmulationEndHandler){
@@ -54,22 +67,36 @@ public class TrackEmulation {
 				mEmulationEndHandler);
 	}
 
+	/**
+	 * start the emulation
+	 */
 	public void start() {
 		tet.start();
 	}
-
+	/**
+	 * stop the emulation
+	 */
 	public void stop() {
 		tet.cancel();
 	}
-	
+	/**
+	 * get the size of the emulated track
+	 * @return
+	 */
 	public int countPoints(){
 		return tet.gpx.trkpt.size();
 	}
-	
+	/**
+	 * get the current position on the current track
+	 * @return
+	 */
 	public int getCurrentPosition(){
 		return tet.position;
 	}
-	
+	/**
+	 * adapt the waited time between two points
+	 * @param increase
+	 */
 	public void adaptSpeed(boolean increase){
 		tet.adaptSpeed(increase);
 	}

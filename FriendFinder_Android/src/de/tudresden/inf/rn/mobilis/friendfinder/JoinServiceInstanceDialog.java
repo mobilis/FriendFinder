@@ -12,8 +12,15 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
 
+/**
+ * dialog to show some informations and set the username befor enter the service-instance
+ *
+ */
 public class JoinServiceInstanceDialog extends DialogFragment{
-	
+	/**
+	 * implemented by the MainActivity to get the data from the Dialog
+	 *
+	 */
 	public interface SettingsDialogListener{
 		public void onDialogPositiveClick(JoinServiceInstanceDialog dialog);
 		public void onDialogNegativeClick(JoinServiceInstanceDialog dialog);
@@ -23,7 +30,9 @@ public class JoinServiceInstanceDialog extends DialogFragment{
 	
 	public String serviceInfoString;
 	public String editNameString;
-	
+	/**
+	 * username
+	 */
 	public EditText editName;
 	protected TextView serviceInfo;
 	

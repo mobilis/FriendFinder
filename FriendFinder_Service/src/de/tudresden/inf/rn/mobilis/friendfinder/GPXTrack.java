@@ -20,10 +20,16 @@ import java.util.logging.Logger;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserFactory;
 
+/**
+ * represents a gpx-track with name, time and a list of trackpoints
+ * export this data to gpx-file or xml-string to send it over xmpp
+ */
 public class GPXTrack {
 	private final static Logger LOG = Logger.getLogger(DBProxy.class
 			.getCanonicalName());
-	
+	/**
+	 * file for saving
+	 */
 	protected File mGpxFile;
 
 	// metadata
@@ -56,6 +62,16 @@ public class GPXTrack {
 		return gpx;
 	}
 
+	/**
+	 * ad a new trackpoint to the list
+	 * @param lat
+	 * @param lon
+	 * @param activity
+	 * @param speed
+	 * @param time
+	 * @param ele
+	 * @param acc
+	 */
 	public void addTrackPoint(double lat, double lon, String activity,
 			float speed, long time, float ele, float acc) {
 		trkpt.add(new Trkpt(lat, lon, activity, speed, time, ele, acc));
@@ -67,7 +83,11 @@ public class GPXTrack {
 	}
 
 	public String toXML(){ return this.toXML(true); }
-	
+	/**
+	 * export the data to a xml-string
+	 * @param forIQ if true, the gpx-headers will be removed
+	 * @return
+	 */
 	public String toXML(Boolean forIQ) {
 		final String START = "<";
 		final String END = ">";
@@ -119,7 +139,10 @@ public class GPXTrack {
 		sb.append(START + "/" + XML_TRKSEG + END + NEWLINE + START + "/" + XML_TRK + END);
 		return sb.toString();
 	}
-
+	/**
+	 * clear current data and parse the data from a given xml-string
+	 * @param gpx
+	 */
 	public void fromXML(String gpx){
 		try {
 			XmlPullParser xpp;
@@ -175,11 +198,17 @@ public class GPXTrack {
 	}
 	
 	public ArrayList<Trkpt> getTrackPoints(){ return this.trkpt; }
-	
+	/**
+	 * required from XMPPBean-Objects to parse this class automatically
+	 * @return
+	 */
 	public String getChildElement(){ return GPXTrack.CHILD_ELEMENT; }
 
 	/************** inner classes **********************/
-
+	/**
+	 * represents a trackpoint
+	 * implements all methods to export the trackpoint-data to xml
+	 */
 	public class Trkpt {
 		public double lat;
 		public double lon;

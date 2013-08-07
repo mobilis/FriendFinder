@@ -10,10 +10,17 @@ import de.tudresden.inf.rn.mobilis.friendfinder.proxy.IsTrackAvailableResponse;
 import de.tudresden.inf.rn.mobilis.xmpp.beans.ProxyBean;
 import de.tudresden.inf.rn.mobilis.xmpp.server.BeanProviderAdapter;
 
+/**
+ * Serviceclass to encapsulate the EET-Algorithm
+ * used like a real MobilisService-implementation
+ */
 public class EET_Service {
 	private final static Logger LOG = Logger.getLogger(EET_Service.class
 			.getCanonicalName());
 
+	/**
+	 * the db to save the tracks and trackpoints
+	 */
 	private DBProxy db;
 
 	public EET_Service() {
@@ -30,20 +37,35 @@ public class EET_Service {
 		}
 	}
 	
+	/**
+	 * do nothing
+	 */
 	public void startup(){}
 	
+	/**
+	 * close db-connection
+	 */
 	public void shutdown(){
 		if(db != null){
 			db.close();
 		}
 	}
 
+	/**
+	 * register own IQ-Namespaces
+	 */
 	public void registerPacketListener() {
 		(new BeanProviderAdapter(new ProxyBean(
 				IsTrackAvailableRequest.NAMESPACE,
 				IsTrackAvailableRequest.CHILD_ELEMENT))).addToProviderManager();
 	}
 
+	/**
+	 * process the received IsTrackAvailable-IQ
+	 * includes the serverside-algorithm
+	 * @param in
+	 * @return
+	 */
 	protected IsTrackAvailableResponse isTrackAvailable(
 			IsTrackAvailableRequest in) {
 		IsTrackAvailableResponse out = new IsTrackAvailableResponse();
@@ -136,6 +158,12 @@ public class EET_Service {
 		return out;
 	}
 
+	/**
+	 * receive the Packets and send the answer
+	 * @param proxyBean
+	 * @param _proxy
+	 * @return
+	 */
 	public Boolean processPacket(ProxyBean proxyBean, FriendFinderProxy _proxy) {
 		if (proxyBean.isTypeOf(IsTrackAvailableRequest.NAMESPACE,
 				IsTrackAvailableRequest.CHILD_ELEMENT)) {

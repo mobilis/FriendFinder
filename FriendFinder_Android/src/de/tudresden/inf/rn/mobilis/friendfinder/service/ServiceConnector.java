@@ -10,6 +10,10 @@ import android.os.Handler;
 import android.os.IBinder;
 import android.util.Log;
 
+/**
+ * connect the BackgroundService to the Activities
+ * look in Android-Documentation for additional details
+ */
 public class ServiceConnector {
 
 	private static final String TAG = "ServiceConnector";

@@ -16,9 +16,16 @@ import java.util.logging.Logger;
 
 import de.tudresden.inf.rn.mobilis.friendfinder.proxy.ClientLocation;
 
+/**
+ * this enclose all methods for accessing the database
+ * for easy exchange of the db, there was a jdbc-driver used
+ */
 public class DBProxy {
 	private final String TABLE_NODES = "nodes";
 	private final String TABLE_TRACKS = "tracks";
+	/**
+	 * maximum error between two points to detect as the same one
+	 */
 	private final float error_bound = 20; // in meter
 	
 	private String db_name;
@@ -32,6 +39,9 @@ public class DBProxy {
 		this.connect();
 	}
 
+	/**
+	 * connect to the database
+	 */
 	public void connect() {
 		try {
 			db_name =  "friendfinder_db\\eet_"+System.currentTimeMillis()+".db";
@@ -46,6 +56,9 @@ public class DBProxy {
 		}
 	}
 
+	/**
+	 * close the database-connection
+	 */
 	public void close() {
 		if (c != null) {
 			try {
@@ -57,7 +70,9 @@ public class DBProxy {
 	}
 
 	/************* insert ********************/
-
+	/**
+	 * insert some mock-data
+	 */
 	public void insertMock() {
 		int key = insertTrack(1, System.currentTimeMillis());
 		insertNode(51.2, 13.4, key, "on_bicycle", System.currentTimeMillis(),
@@ -65,7 +80,10 @@ public class DBProxy {
 		insertNode(51.22, 13.42, key, "on_bicycle", System.currentTimeMillis(),
 				5.6f);
 	}
-
+	/**
+	 * insert a gpx-track
+	 * @param gpx
+	 */
 	public void insertGPX(GPXTrack gpx) {
 		int trkKey = this.insertTrack(1, gpx.time);
 		ArrayList<GPXTrack.Trkpt> pts = gpx.getTrackPoints();
@@ -77,7 +95,12 @@ public class DBProxy {
 				LOG.info("node already exists");
 		}
 	}
-
+	/**
+	 * insert one track with frequency and time
+	 * @param frequency
+	 * @param time
+	 * @return the id of the inserted track
+	 */
 	public int insertTrack(int frequency, long time) {
 		try {
 			Statement stmt = c.createStatement();
@@ -99,12 +122,24 @@ public class DBProxy {
 			return 0;
 		}
 	}
-
+	/**
+	 * insert one node
+	 * @param cl
+	 * @param track_fk
+	 */
 	public void insertNode(ClientLocation cl, int track_fk) {
 		insertNode(cl.getLat(), cl.getLng(), track_fk, cl.getActivity(),
 				cl.getTime(), cl.getSpeed());
 	}
-
+	/**
+	 * insert one node
+	 * @param lat
+	 * @param lon
+	 * @param track_fk
+	 * @param activity
+	 * @param time
+	 * @param speed
+	 */
 	public void insertNode(double lat, double lon, int track_fk,
 			String activity, long time, float speed) {
 		try {
@@ -119,7 +154,11 @@ public class DBProxy {
 			LOG.severe("!EXCEPTION " + e.toString());
 		}
 	}
-
+	/**
+	 * divide a track in two indepentend tracks with different track-ids
+	 * @param trackId
+	 * @param nodeId
+	 */
 	public void divideTrack(int trackId, int nodeId) {
 
 		try {
@@ -145,6 +184,10 @@ public class DBProxy {
 		}
 	}
 	
+	/**
+	 * clean up the db
+	 * - delete short tracks
+	 */
 	public void cleanDB(){
 		try {
 			Statement stmt = c.createStatement();
@@ -163,6 +206,10 @@ public class DBProxy {
 		}
 	}
 	
+	/**
+	 * increase the frequency-field of a track
+	 * @param trackId
+	 */
 	public void rateTrack(int trackId){
 		try {
 			Statement stmt = c.createStatement();
@@ -174,7 +221,12 @@ public class DBProxy {
 	}
 
 	/******************** select ***************/
-
+	/**
+	 * is there a track for the given coordinates in the db
+	 * @param lat
+	 * @param lon
+	 * @return
+	 */
 	public Boolean hasNode(double lat, double lon) {
 		try {
 			Statement stmt = c.createStatement();
@@ -190,7 +242,13 @@ public class DBProxy {
 			return null;
 		}
 	}
-
+	/**
+	 * get all matching nodes which are in the range of error_bound from the given coordinates joined with the track-frequency
+	 * @param lat
+	 * @param lon
+	 * @param acc
+	 * @return
+	 */
 	public ArrayList<Node> getMatchingNodes(double lat, double lon, double acc) {
 		ArrayList<Node> list = new ArrayList<Node>();
 
@@ -234,6 +292,11 @@ public class DBProxy {
 		}
 	}
 
+	/**
+	 * select one track
+	 * @param trackId
+	 * @return the found track as a gpx-track
+	 */
 	public GPXTrack selectTrack(int trackId) {
 		GPXTrack gpx = new GPXTrack();
 		gpx.trkName = Integer.toString(trackId);
@@ -259,6 +322,9 @@ public class DBProxy {
 
 	/******************* other *****************/
 
+	/**
+	 * save database to a gpx-file with multiple trk-sections
+	 */
 	public void saveGPX() {
 		int track_fk = 0;
 		GPXTrack gpx = null;
@@ -302,6 +368,9 @@ public class DBProxy {
 		}
 	}
 
+	/**
+	 * print db to the console
+	 */
 	public void printData() {
 		Statement stmt;
 		try {
@@ -334,6 +403,9 @@ public class DBProxy {
 		}
 	}
 
+	/**
+	 * create tables if not exists
+	 */
 	public void createTables() {
 		try {
 			Statement stmt = c.createStatement();
@@ -359,6 +431,10 @@ public class DBProxy {
 		}
 	}
 
+	/**
+	 * representation of a node with id and track-attributes
+	 *
+	 */
 	public class Node {
 		int id, track_fk, frequency;
 		double lat, lon;

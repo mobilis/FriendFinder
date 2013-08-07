@@ -34,6 +34,10 @@ import de.tudresden.inf.rn.mobilis.friendfinder.service.BackgroundService;
 import de.tudresden.inf.rn.mobilis.friendfinder.service.ServiceConnector;
 import de.tudresden.inf.rn.mobilis.mxa.ConstMXA.MessageItems;
 
+/**
+ * MUC-activity
+ *
+ */
 public class MUCActivity extends Activity implements OnClickListener,
 		CompoundButton.OnCheckedChangeListener {
 
@@ -52,6 +56,9 @@ public class MUCActivity extends Activity implements OnClickListener,
 
 	/********************* Handler **********************/
 
+	/**
+	 * called, if the BackgroundService is bound successfully
+	 */
 	private Handler onServiceBoundHandler = new Handler() {
 		public void handleMessage(Message msg) {
 			mServiceConnector.getService().connectToMUC();
@@ -62,6 +69,9 @@ public class MUCActivity extends Activity implements OnClickListener,
 		}
 	};
 
+	/**
+	 * called, if a new muc-message was received 
+	 */
 	private Handler onNewMUCMessageHandler = new Handler() {
 		public void handleMessage(Message msg) {
 			// Display a toast on top of the screen
@@ -77,6 +87,9 @@ public class MUCActivity extends Activity implements OnClickListener,
 		}
 	};
 
+	/**
+	 * called, if a response for the LeaveService-Request received
+	 */
 	IXMPPCallback<LeaveServiceResponse> onLeaveService = new IXMPPCallback<LeaveServiceResponse>() {
 		@Override
 		public void invoke(LeaveServiceResponse xmppBean) {
@@ -185,9 +198,8 @@ public class MUCActivity extends Activity implements OnClickListener,
 	/*********************** class-spezific functions **********************/
 
 	/**
-	 * Send the Message to the XMPP-Service
+	 * Send the MUCMessage to the MUC
 	 */
-
 	private void sendMessage() {
 		// ignore, if text ist empty
 		if (editText.getText().toString().equals(""))
@@ -251,6 +263,9 @@ public class MUCActivity extends Activity implements OnClickListener,
 		list.setAdapter(adapter);
 	}
 
+	/** 
+	 * custom CursorAdapter for displaying the muc-messages
+	 */
 	private class MUCListAdapter extends SimpleCursorAdapter {
 
 		private String mucJID;

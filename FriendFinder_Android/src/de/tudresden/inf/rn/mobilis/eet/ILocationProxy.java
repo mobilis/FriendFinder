@@ -1,11 +1,12 @@
 package de.tudresden.inf.rn.mobilis.eet;
 
-
-
 import android.location.Location;
 import android.location.LocationListener;
 
-public interface LocationProxy {
+/**
+ * Interface define the public methods of the tracing-classes
+ */
+public interface ILocationProxy {
 	
 	public final int PRED_OFF = 0;
 	public final int PRED_CHECK = 1;

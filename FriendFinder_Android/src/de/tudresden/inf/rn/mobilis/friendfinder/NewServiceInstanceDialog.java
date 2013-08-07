@@ -12,8 +12,14 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
 
+/**
+ * Dialog to set the servicename befor the create-service-iq was send
+ */
 public class NewServiceInstanceDialog extends DialogFragment{
-	
+	/**
+	 * implemented by the MainActivity to get the data from the Dialog
+	 *
+	 */
 	public interface NewServiceDialogListener{
 		public void onDialogPositiveClick(NewServiceInstanceDialog dialog);
 		public void onDialogNegativeClick(NewServiceInstanceDialog dialog);
@@ -22,6 +28,9 @@ public class NewServiceInstanceDialog extends DialogFragment{
 	private NewServiceDialogListener mListener;
 	
 	public String editNameString;	
+	/**
+	 * new service name
+	 */
 	public EditText editName;
 	protected TextView serviceInfo;
 	
