@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
@@ -12,6 +13,7 @@ import org.jivesoftware.smack.XMPPException;
 import org.jivesoftware.smack.filter.PacketTypeFilter;
 import org.jivesoftware.smack.packet.IQ;
 import org.jivesoftware.smack.packet.Packet;
+import org.jivesoftware.smack.packet.PacketExtension;
 import org.jivesoftware.smackx.Form;
 import org.jivesoftware.smackx.FormField;
 import org.jivesoftware.smackx.muc.MultiUserChat;
@@ -60,7 +62,7 @@ public class FriendFinder_Service extends MobilisService {
 	private HashMap<String, ClientData> clientJID;
 
 	private MultiUserChat muc;
-	private String mucDomain = "conference.joyo.diskstation.org";
+	private String mucDomain = "conference.philipp-pc";
 	private String mucPwd = "test";
 	private long serviceID = 1;
 	private String serviceName = "FriendFinder";
@@ -292,5 +294,11 @@ public class FriendFinder_Service extends MobilisService {
 				}
 			}
 		}
+	}
+
+	@Override
+	public List<PacketExtension> getNodePacketExtensions() {
+		// TODO Auto-generated method stub
+		return null;
 	};
 }
