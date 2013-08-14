@@ -459,7 +459,7 @@ public class MainActivity extends Activity implements ICallback,
 				mServiceConnector
 				.getService()
 				.getIQProxy()
-				.AnswerSendNewServiceInstance();
+				.AnswerSendNewServiceInstance((SendNewServiceInstanceBean)inBean);
 				//progressDialog = ProgressDialog.show(this, "Waiting", "Create new service instance", true);
 				//progressDialog.setCancelable(true);
 				

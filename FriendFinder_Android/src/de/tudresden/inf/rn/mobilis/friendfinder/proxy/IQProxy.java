@@ -455,9 +455,10 @@ public class IQProxy {
 		Log.v("IQProxy", "CreateNewServiceInstanceBean send");
 	}
 	
-	public void AnswerSendNewServiceInstance(){
+	public void AnswerSendNewServiceInstance(SendNewServiceInstanceBean inBean){
 		SendNewServiceInstanceBean bean = new SendNewServiceInstanceBean();
 		bean.setType(XMPPBean.TYPE_RESULT);
+		bean.setId(inBean.getId());
 		bean.setFrom(mMXAProxy.getXmppJid());
 		bean.setTo(mServerCoordinatorJid);
 		mMXAProxy.sendIQ(beanToIQ(bean, true));
