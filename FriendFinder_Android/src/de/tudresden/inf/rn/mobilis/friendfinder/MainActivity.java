@@ -48,6 +48,7 @@ import de.tudresden.inf.rn.mobilis.xmpp.beans.XMPPBean;
 import de.tudresden.inf.rn.mobilis.xmpp.beans.coordination.CreateNewServiceInstanceBean;
 import de.tudresden.inf.rn.mobilis.xmpp.beans.coordination.MobilisServiceDiscoveryBean;
 import de.tudresden.inf.rn.mobilis.xmpp.beans.coordination.MobilisServiceInfo;
+import de.tudresden.inf.rn.mobilis.xmpp.beans.coordination.SendNewServiceInstanceBean;
 
 /**
  * the mainactivity is the entrypoint of the app
@@ -441,13 +442,32 @@ public class MainActivity extends Activity implements ICallback,
 				mServiceDiscoveryHandler.sendEmptyMessage(0);
 			}
 
-		} else if (inBean instanceof CreateNewServiceInstanceBean) {
+		} 
+		
+		if (inBean instanceof CreateNewServiceInstanceBean) {
 			if (inBean.getType() == XMPPBean.TYPE_ERROR) {
 				mServiceCreateHandler.sendEmptyMessage(-1);
 			} else {
+				//mServiceCreateHandler.sendEmptyMessage(1);
+			}
+		} 
+		
+		if (inBean instanceof SendNewServiceInstanceBean){
+			if (inBean.getType() == XMPPBean.TYPE_ERROR) {
+				mServiceCreateHandler.sendEmptyMessage(-1);
+			} else {
+				mServiceConnector
+				.getService()
+				.getIQProxy()
+				.AnswerSendNewServiceInstance((SendNewServiceInstanceBean)inBean);
+				//progressDialog = ProgressDialog.show(this, "Waiting", "Create new service instance", true);
+				//progressDialog.setCancelable(true);
+				
 				mServiceCreateHandler.sendEmptyMessage(1);
+				
 			}
 		}
+		
 		// Other Beans of type get or set will be responded with an ERROR
 		else {
 			Log.e(TAG, "Unexpected Bean in MainActivity: " + inBean.toString());

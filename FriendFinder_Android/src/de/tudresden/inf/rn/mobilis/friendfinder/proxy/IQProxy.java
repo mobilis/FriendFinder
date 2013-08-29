@@ -42,6 +42,7 @@ import de.tudresden.inf.rn.mobilis.mxa.parcelable.XMPPIQ;
 import de.tudresden.inf.rn.mobilis.xmpp.beans.XMPPBean;
 import de.tudresden.inf.rn.mobilis.xmpp.beans.coordination.CreateNewServiceInstanceBean;
 import de.tudresden.inf.rn.mobilis.xmpp.beans.coordination.MobilisServiceDiscoveryBean;
+import de.tudresden.inf.rn.mobilis.xmpp.beans.coordination.SendNewServiceInstanceBean;
 
 import android.os.RemoteException;
 import android.util.Log;
@@ -58,13 +59,13 @@ public class IQProxy {
 	private MXAProxy mMXAProxy;
 
 	/** The jid of the current MobilisXHunt service (game on server side). */
-	private String mGameServiceJid = "mobilis@joyo.diskstation.org";
+	private String mGameServiceJid = "runtime1@mobilis.inf.tu-dresden.de";
 
 	/** The descriptive name of the MobilisXHunt service. */
 	private String mGameName;
 
 	/** The jid of the Coordinator of the Mobilis Server. */
-	private String mServerCoordinatorJid = "mobilis@joyo.diskstation.org/Coordinator";
+	private String mServerCoordinatorJid = mGameServiceJid + "/Coordinator";
 
 	/** The local XHuntService used as application controller. */
 	private BackgroundService mService;
@@ -334,6 +335,7 @@ public class IQProxy {
 
 		registerXMPPBean(new CreateNewServiceInstanceBean());
 		registerXMPPBean(new MobilisServiceDiscoveryBean());
+		registerXMPPBean(new SendNewServiceInstanceBean());
 		
 		registerXMPPBean(new JoinServiceRequest());
 		registerXMPPBean(new JoinServiceResponse());
@@ -452,6 +454,17 @@ public class IQProxy {
 
 		Log.v("IQProxy", "CreateNewServiceInstanceBean send");
 	}
+	
+	public void AnswerSendNewServiceInstance(SendNewServiceInstanceBean inBean){
+		SendNewServiceInstanceBean bean = new SendNewServiceInstanceBean();
+		bean.setType(XMPPBean.TYPE_RESULT);
+		bean.setId(inBean.getId());
+		bean.setFrom(mMXAProxy.getXmppJid());
+		bean.setTo(mServerCoordinatorJid);
+		mMXAProxy.sendIQ(beanToIQ(bean, true));
+
+		Log.v("IQProxy", "SendNewServiceInstanceBean send");
+	}
 
 	/**
 	 * Sends a MobilisServiceDiscoveryBean to the an MobilisXHunt game service.
@@ -546,6 +559,10 @@ public class IQProxy {
 				unregisterXMPPExtension(AbstractCallback,
 						CreateNewServiceInstanceBean.NAMESPACE,
 						CreateNewServiceInstanceBean.CHILD_ELEMENT);
+				
+				unregisterXMPPExtension(AbstractCallback,
+						SendNewServiceInstanceBean.NAMESPACE,
+						SendNewServiceInstanceBean.CHILD_ELEMENT);
 
 				for (Map.Entry<String, Map<String, XMPPBean>> entity : this.beanPrototypes
 						.entrySet()) {
@@ -614,14 +631,14 @@ public class IQProxy {
 		@Override
 		public void processIQ(XMPPIQ iq) throws RemoteException {
 
-			if (!(mGameServiceJid.equals(iq.from.substring(0, mGameServiceJid.length())) || iq.from
-					.equals(mServerCoordinatorJid))) {
-				String msg = "Discarded IQ from unknown JID " + iq.from
-						+ " to prevent GameService zombies from interfering"
-						+ " - see IQProxy.AbstractCallback.processIQ()";
-				Log.w(TAG, msg);
-				return;
-			}
+//			if (!(mGameServiceJid.equals(iq.from.substring(0, mGameServiceJid.length())) || iq.from
+//					.equals(mServerCoordinatorJid))) {
+//				String msg = "Discarded IQ from unknown JID " + iq.from
+//						+ " to prevent GameService zombies from interfering"
+//						+ " - see IQProxy.AbstractCallback.processIQ()";
+//				Log.w(TAG, msg);
+//				return;
+//			}
 
 			Log.v(TAG, "AbstractCallback: ID: " + iq.packetID + " type: "
 					+ iq.type + " ns: " + iq.namespace + " payload: "
