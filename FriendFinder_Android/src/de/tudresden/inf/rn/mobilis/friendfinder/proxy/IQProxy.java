@@ -59,13 +59,13 @@ public class IQProxy {
 	private MXAProxy mMXAProxy;
 
 	/** The jid of the current MobilisXHunt service (game on server side). */
-	private String mGameServiceJid = "mruntime1@philipp-pc";
+	private String mGameServiceJid = "runtime1@mobilis.inf.tu-dresden.de";
 
 	/** The descriptive name of the MobilisXHunt service. */
 	private String mGameName;
 
 	/** The jid of the Coordinator of the Mobilis Server. */
-	private String mServerCoordinatorJid = "mruntime1@philipp-pc/Coordinator";
+	private String mServerCoordinatorJid = mGameServiceJid + "/Coordinator";
 
 	/** The local XHuntService used as application controller. */
 	private BackgroundService mService;

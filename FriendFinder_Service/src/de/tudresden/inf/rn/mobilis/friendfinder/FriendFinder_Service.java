@@ -62,7 +62,7 @@ public class FriendFinder_Service extends MobilisService {
 	private HashMap<String, ClientData> clientJID;
 
 	private MultiUserChat muc;
-	private String mucDomain = "conference.philipp-pc";
+	private String mucDomain = "conference.mobilis.inf.tu-dresden.de";
 	private String mucPwd = "test";
 	private long serviceID = 1;
 	private String serviceName = "FriendFinder";
@@ -296,7 +296,6 @@ public class FriendFinder_Service extends MobilisService {
 		}
 	}
 
-	@Override
 	public List<PacketExtension> getNodePacketExtensions() {
 		// TODO Auto-generated method stub
 		return null;
