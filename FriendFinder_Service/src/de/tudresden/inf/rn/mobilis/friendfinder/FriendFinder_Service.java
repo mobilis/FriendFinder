@@ -295,9 +295,4 @@ public class FriendFinder_Service extends MobilisService {
 			}
 		}
 	}
-
-	public List<PacketExtension> getNodePacketExtensions() {
-		// TODO Auto-generated method stub
-		return null;
-	};
 }
