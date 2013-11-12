@@ -11,14 +11,14 @@
 	<property name="res.dir" value="resource" />
 
 	<!-- Meta information variables -->
-	<property name="service.package" value="de.tudresden.inf.rn.mobilis.services.friendfinder" />
+	<property name="service.package" value="de.tudresden.inf.rn.mobilis.friendfinder" />
 	<property name="msdl.filepath" value="META-INF" />
 	<property name="service.name" value="FriendFinder_Service" />
 	<property name="msdl.filename" value="FriendFinder.msdl" />
 
 	<!-- Jar archive variables -->
 	<property name="jar.filename" value="FriendFinder_Service_v1.jar" />
-	<property name="root.packages" value="de/tudresden/inf/rn/mobilis/services/**/*.*" />
+	<property name="root.packages" value="de/tudresden/inf/rn/mobilis/friendfinder/**/*.*" />
 	<!-- all: "**/*.jar"; none: "none"; separate entrylist by ',' -->
 	<property name="required.libraries" value="**/*.jar" />
 	<!-- all: "**/*.*"; none: "none"; separate entrylist by ',' -->
