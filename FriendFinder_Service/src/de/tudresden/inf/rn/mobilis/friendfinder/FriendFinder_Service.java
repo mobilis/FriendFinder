@@ -33,7 +33,7 @@ import de.tudresden.inf.rn.mobilis.server.services.MobilisService;
 import de.tudresden.inf.rn.mobilis.xmpp.beans.IXMPPCallback;
 import de.tudresden.inf.rn.mobilis.xmpp.beans.ProxyBean;
 import de.tudresden.inf.rn.mobilis.xmpp.beans.XMPPBean;
-import de.tudresden.inf.rn.mobilis.xmpp.beans.admin.PingBean;
+import de.tudresden.inf.rn.mobilis.xmpp.beans.deployment.PingBean;
 import de.tudresden.inf.rn.mobilis.xmpp.server.BeanHelper;
 import de.tudresden.inf.rn.mobilis.xmpp.server.BeanIQAdapter;
 import de.tudresden.inf.rn.mobilis.xmpp.server.BeanProviderAdapter;
@@ -295,9 +295,4 @@ public class FriendFinder_Service extends MobilisService {
 			}
 		}
 	}
-
-	public List<PacketExtension> getNodePacketExtensions() {
-		// TODO Auto-generated method stub
-		return null;
-	};
 }
